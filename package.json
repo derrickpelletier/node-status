@@ -1,0 +1,19 @@
+{
+  "name": "status",
+  "description": "A live status runner for node.js",
+  "version": "0.0.1",
+  "author": {
+    "name": "Derrick Pelletier"
+  },
+  "private": true,
+  "scripts": {
+    "status": "node status.js",
+    "example": "node example.js"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "dependencies": {
+    "colors":"*"
+  }
+}
