@@ -1,31 +1,32 @@
 //
 var status = require('./status.js')
 
-status.addItem("Total", {
+status.addItem("total", {
   max:100, 
   type:"percentage",
   color:'cyan'
 })
 
 status.addItem("ERR", {
-  color:'red'
+  color:'red',
+  label:'errors'
 })
 
-status.addItem("Pizza", {
+status.addItem("pizza", {
   color:'green',
   type:['bar','percentage'],
-  max:50,
+  max:8,
   precision:0
 })
 
+ status.updateItem('pizza', 1)
 console.log("Starting timer")
 var it = 500
 var times = 0
 var runner = function() {
 	times++
-  status.updateItem('Total', 5)
+  status.updateItem('total', 5)
   status.updateItem('ERR', 1)
-  status.updateItem('Pizza', 1)
 	if(times == 10) {
 		// status.stamp()
 		times = 0
