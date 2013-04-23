@@ -7,7 +7,8 @@ var colors = require('colors'),
 // This is a single item (Or cell or whatever you call it) in the status display
 //
 var Item = function(options) {
-	this.label = options.label
+	this.name = options.name
+	this.label = (options.label) ? options.label : options.name
 	this.count = 0
 	options.count && (this.count = options.count)
 	options.max && (this.max = options.max)
@@ -31,8 +32,8 @@ var render = function(stamp){
   for (var i in items) {
 
     var c = items[i],
-    		nums = (c.color ? c.color(c.label) : c.label) + ": ",
-    		types = c.type
+  		nums = (c.color ? c.color(c.label) : c.label) + ": ",
+  		types = c.type
 
     if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
     	types = [c.type]
@@ -77,9 +78,9 @@ var nicetime = function(ms){
 //
 // add a new item to the status bar
 //
-exports.addItem = function(label, options){
-	options.label = label
-	items[label] = new Item(options)
+exports.addItem = function(name, options){
+	options.name = name
+	items[name] = new Item(options)
 }
 
 //
