@@ -1,7 +1,8 @@
 var colors = require('colors'),
 		start = new Date().getTime(),
 		pad = "   ",
-		items = {}
+		items = {},
+		util = require('util')
 
 //
 // This is a single item (Or cell or whatever you call it) in the status display
@@ -57,7 +58,6 @@ var render = function(stamp){
 	  }
     out += pad + nums + pad + "|"
   }
-
   if(stamp) {
   	process.stdout.write("\u001B[2K")
   	console.log("@ " + nicetime(new Date().getTime() - start) + "|" + out + "\r")
@@ -93,6 +93,38 @@ exports.updateItem = function(item, amount) {
 	render()
 }
 
+var clear_line = function(){ process.stdout.write("\u001B[2K") }
+
+var log = function() {
+	clear_line()
+	console.log.apply(this,arguments)
+	render()
+}
+var info = function() {
+	clear_line()
+	console.info.apply(this,arguments)
+	render()
+}
+var warn = function() {
+	clear_line()
+	console.warn.apply(this,arguments)
+	render()
+}
+var error = function() {
+	clear_line()
+	console.error.apply(this,arguments)
+	render()
+}
+exports.clear = "\u001B[2K"
+
+exports.console = function(){
+	return {
+		'log':log,
+		'info':info,
+		'error':error,
+		'warn':warn
+	}
+}
 //
 // Stamps the current status to the console
 //
