@@ -14,7 +14,8 @@ status.addItem("ERR", {
 status.addItem("Pizza", {
   color:'green',
   type:['bar','percentage'],
-  max:50
+  max:50,
+  precision:0
 })
 
 console.log("Starting timer")
