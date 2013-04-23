@@ -1,7 +1,11 @@
-var colors = require('colors')
-var start = new Date().getTime()
-var pad = "  "
+var colors = require('colors'),
+		start = new Date().getTime(),
+		pad = "   ",
+		items = {}
 
+//
+// This is a single item (Or cell or whatever you call it) in the status display
+//
 var Item = function(options) {
 	this.label = options.label
 	this.count = 0
@@ -9,75 +13,78 @@ var Item = function(options) {
 	options.max && (this.max = options.max)
 	options.color && (this.color = colors[options.color])
 	this.type = (options.type) ? options.type : "count"
+	this.precision = (options.precision != undefined) ? options.precision : 3
 }
 
-var items = {}
+//
+// Repeats a string, using it for the status bar instead of loops
+//
+String.prototype.repeat = function( len ) {return new Array(len + 1).join(this)}
 
+//
+// Render the status bar row
+// Loops through all items, then loops through the different types for each item
+// If stamp is true, it will console.log it instead of doing an stdout
+//
 var render = function(stamp){
 	var out = ""
   for (var i in items) {
-    var c = items[i]
-    var text = c.color ? c.color(c.label) : c.label
 
+    var c = items[i],
+    		nums = (c.color ? c.color(c.label) : c.label) + ": ",
+    		types = c.type
 
-
-    var nums = ""
-
-    var types = c.type
-    if( Object.prototype.toString.call( types ) !== '[object Array]' ) {
+    if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
     	types = [c.type]
-		}
 
 		for (var a = 0; a < types.length; a++) {
 			if(a > 0)
 				nums += pad
 	    switch(types[a]) {
 	    	case "percentage":
-	    		nums += (100 * c.count/c.max).toFixed(3) + " %"
+	    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
 	    		break;
 	    	case "bar":
-	    		var done = Math.round(10 * c.count/c.max) 
-	    		nums += "["
-	    		for (var i = 0; i < done; i++) {
-	    			nums += "▒".white
-	    		}
-	    		for (var i = 0; i < 10-done; i++) {
-	    			nums += "-".black
-	    		}
-	    		nums += "]"
+	    		var bar_len = 10
+	    		var done = Math.round(bar_len * c.count/c.max) 
+	    		nums += "[" + ("▒".white).repeat(done) + ("▒".black).repeat(bar_len - done) + "]"
 	    		break;
 	    	default:
-	    		nums += c.count
-	    		if(c.max)
-	    			nums += "/" + c.max
+	    		nums += c.count + (c.max ? "/" + c.max : "")
 	    		break;
 	    }
 	  }
-    out += "|" + pad + text + ": " + nums + pad
+    out += pad + nums + pad + "|"
   }
-  out +=  " |"
+
   if(stamp) {
   	process.stdout.write("\u001B[2K")
-  	console.log("@ " + nicetime(new Date().getTime() - start) + out + "\r")
+  	console.log("@ " + nicetime(new Date().getTime() - start) + "|" + out + "\r")
+  } else {
+  	process.stdout.write("\u001B[2K  Status: |" +  out + "\r")
   }
-  process.stdout.write("\u001B[2KStatus: " + out + "\r")
 }
 
+//
+// Currently just changes the milliseconds to either a number of seconds or number of minutes
+//
 var nicetime = function(ms){
 	var seconds = ms / 1000
 	var minutes = seconds / 60
 	return (minutes < 2) ? seconds + "s " : minutes + " mins "
 }
 
+//
+// add a new item to the status bar
+//
 exports.addItem = function(label, options){
 	options.label = label
 	items[label] = new Item(options)
 }
 
-exports.list = function(){
-	console.log(items.length)
-}
-
+//
+// Update the count on an item, then re-render
+//
 exports.updateItem = function(item, amount) {
 	item = items[item]
 	item.count += amount
@@ -85,6 +92,9 @@ exports.updateItem = function(item, amount) {
 	render()
 }
 
+//
+// Stamps the current status to the console
+//
 exports.stamp = function() {
 	render(true)
 }
