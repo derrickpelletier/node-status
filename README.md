@@ -6,7 +6,6 @@ Very early/rough stage. Will document soon.
 
 I plan to make a better name for this.
 
-
 ## An example!
 
 	// Initialize the item with options
@@ -21,3 +20,17 @@ I plan to make a better name for this.
 	status.updateItem('pizza', 1)
 	
 This will output: `Status: |   pizza: [█▒▒▒▒▒▒▒▒▒]   13 %   |`
+
+
+Note!
+===========
+
+If you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
+
+You can utilize an extended console.log by adding this to the top of the file:
+
+	console = status.console()
+
+or, by just logging this prior to whatever else you need to log:
+	
+	console.log(status.clear)

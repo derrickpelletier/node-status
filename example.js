@@ -1,5 +1,6 @@
 //
-var status = require('./status.js')
+var status = require('./status.js'),
+		console = status.console()
 
 status.addItem("total", {
   max:100, 
@@ -19,8 +20,10 @@ status.addItem("pizza", {
   precision:0
 })
 
- status.updateItem('pizza', 1)
+status.updateItem('pizza', 1)
 console.log("Starting timer")
+
+
 var it = 500
 var times = 0
 var runner = function() {
@@ -28,7 +31,7 @@ var runner = function() {
   status.updateItem('total', 5)
   status.updateItem('ERR', 1)
 	if(times == 10) {
-		// status.stamp()
+		// status.stamp()c
 		times = 0
 	}
   setTimeout(runner, it)
