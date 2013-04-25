@@ -44,9 +44,14 @@ var render = function(stamp){
 				nums += pad
 	    switch(types[a]) {
 	    	case "percentage":
+	    		if(!c.max) break;
 	    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
 	    		break;
+	    	case "time":
+	    		nums += nicetime(new Date().getTime() - start)
+	    		break;
 	    	case "bar":
+	    		if(!c.max) break;
 	    		var bar_len = 10
 	    		var done = Math.round(bar_len * c.count/c.max) 
 	    		nums += "[" + ("▒".white).repeat(done) + ("▒".black).repeat(bar_len - done) + "]"
@@ -58,9 +63,10 @@ var render = function(stamp){
 	  }
     out += pad + nums + pad + "|"
   }
+  if(out === "") return
   if(stamp) {
   	process.stdout.write("\u001B[2K")
-  	console.log("@ " + nicetime(new Date().getTime() - start) + "|" + out + "\r")
+  	console.log("Status @ " + nicetime(new Date().getTime() - start) + "|" + out + "\r")
   } else {
   	process.stdout.write("\u001B[2K  Status: |" +  out + "\r")
   }
@@ -75,6 +81,10 @@ var nicetime = function(ms){
 	return (minutes < 2) ? seconds + "s " : minutes + " mins "
 }
 
+process.on('exit', function() {
+  render(true)
+});
+
 //
 // add a new item to the status bar
 //
@@ -86,11 +96,17 @@ exports.addItem = function(name, options){
 //
 // Update the count on an item, then re-render
 //
-exports.updateItem = function(item, amount) {
+exports.updateCount = function(item, amount) {
 	item = items[item]
-	item.count += amount
+	item.count += (amount != undefined) ? amount : 1
 	if(item.max != undefined) item.count = Math.min(item.count, item.max)
 	render()
+}
+
+exports.updateMax = function(item, amount) {
+	item = items[item]
+	item.max = amount
+	// item.count = Math.min(item.count, item.max)
 }
 
 var clear_line = function(){ process.stdout.write("\u001B[2K") }
