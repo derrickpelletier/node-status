@@ -22,7 +22,6 @@ status.addItem("pizza", {
 
 console.log("Starting timer")
 
-
 var it = 500
 var times = 0
 var runner = function() {
@@ -36,4 +35,6 @@ var runner = function() {
 	}
   setTimeout(runner, it)
 }
+
+status.startAutoStamp()
 runner()

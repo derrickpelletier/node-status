@@ -54,7 +54,7 @@ var render = function(stamp){
 	    		if(!c.max) break;
 	    		var bar_len = 10
 	    		var done = Math.round(bar_len * c.count/c.max) 
-	    		nums += "[" + ("▒".white).repeat(done) + ("▒".black).repeat(bar_len - done) + "]"
+	    		nums += "[" + ("▒").repeat(done) + ("-").repeat(bar_len - done) + "]"
 	    		break;
 	    	default:
 	    		nums += c.count + (c.max ? "/" + c.max : "")
@@ -106,7 +106,6 @@ exports.updateCount = function(item, amount) {
 exports.updateMax = function(item, amount) {
 	item = items[item]
 	item.max = amount
-	// item.count = Math.min(item.count, item.max)
 }
 
 var clear_line = function(){ process.stdout.write("\u001B[2K") }
@@ -141,6 +140,20 @@ exports.console = function(){
 		'warn':warn
 	}
 }
+
+var auto_stamp = false
+exports.startAutoStamp = function(rate){
+	if(!rate) rate = 10000
+	exports.killAutoStamp()
+	auto_stamp = setInterval(exports.stamp, rate)
+}
+
+exports.killAutoStamp = function(){
+	if(auto_stamp) {
+		clearInterval(auto_stamp)
+	}
+}
+
 //
 // Stamps the current status to the console
 //

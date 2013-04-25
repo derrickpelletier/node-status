@@ -20,6 +20,7 @@ I plan to make a better name for this.
 This will output: `Status: |   pizza: [█▒▒▒▒▒▒▒▒▒]   13 %   |`
 
 Also supports more options: `color, precision, count, label`.
+Types available right now are: `count (default), bar, percentage, time`.
 
 
 Note!
