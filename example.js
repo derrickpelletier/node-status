@@ -15,12 +15,11 @@ status.addItem("ERR", {
 
 status.addItem("pizza", {
   color:'green',
-  type:['bar','percentage'],
+  type:['time', 'bar','percentage'],
   max:8,
   precision:0
 })
 
-status.updateItem('pizza', 1)
 console.log("Starting timer")
 
 
@@ -28,10 +27,11 @@ var it = 500
 var times = 0
 var runner = function() {
 	times++
-  status.updateItem('total', 5)
-  status.updateItem('ERR', 1)
+  status.updateCount('total', 5)
+  status.updateCount('ERR', 1)
+  status.updateCount('pizza', 1)
 	if(times == 10) {
-		// status.stamp()c
+		console.log("Logging something arbirtrary")
 		times = 0
 	}
   setTimeout(runner, it)
