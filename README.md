@@ -10,16 +10,16 @@ I plan to make a better name for this.
 
 	// Initialize the item with options
 	status.addItem("pizza", {
-	  color: 'green',
 	  type: ['bar','percentage'],
 	  max: 8,
-	  precision: 0
 	})
 	
 	// Increment the item whenever you need it updated
-	status.updateItem('pizza', 1)
+	status.updateCount('pizza')
 	
 This will output: `Status: |   pizza: [█▒▒▒▒▒▒▒▒▒]   13 %   |`
+
+Also supports more options: `color, precision, count, label`.
 
 
 Note!
