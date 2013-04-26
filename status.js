@@ -15,7 +15,7 @@ var Item = function(options) {
 	options.max && (this.max = options.max)
 	options.color && (this.color = colors[options.color])
 	this.type = (options.type) ? options.type : "count"
-	this.precision = (options.precision != undefined) ? options.precision : 3
+	this.precision = (options.precision != undefined) ? options.precision : 2
 }
 
 //
