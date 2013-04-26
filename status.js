@@ -2,7 +2,8 @@ var colors = require('colors'),
 		start = new Date().getTime(),
 		pad = "   ",
 		items = {},
-		util = require('util')
+		util = require('util'),
+		running = false
 
 //
 // This is a single item (Or cell or whatever you call it) in the status display
@@ -29,6 +30,7 @@ String.prototype.repeat = function( len ) {return new Array(len + 1).join(this)}
 // If stamp is true, it will console.log it instead of doing an stdout
 //
 var render = function(stamp){
+	if(!running) return
 	var out = ""
   for (var i in items) {
 
@@ -75,10 +77,12 @@ var render = function(stamp){
 //
 // Currently just changes the milliseconds to either a number of seconds or number of minutes
 //
-var nicetime = function(ms){
-	var seconds = ms / 1000
-	var minutes = seconds / 60
-	return (minutes < 2) ? seconds + "s " : minutes + " mins "
+var nicetime = function(ms,round){
+	var seconds = (ms / 1000).toFixed(3)
+	var minutes = (seconds / 60).toFixed(3)
+	var time = (minutes < 2) ? seconds : minutes
+	if(round) time = Math.round(time)
+	return time + (minutes < 2 ?  "s " : "m ")
 }
 
 process.on('exit', function() {
@@ -143,6 +147,7 @@ exports.console = function(){
 
 var auto_stamp = false
 exports.startAutoStamp = function(rate){
+	running = true
 	if(!rate) rate = 10000
 	exports.killAutoStamp()
 	auto_stamp = setInterval(exports.stamp, rate)
@@ -152,6 +157,10 @@ exports.killAutoStamp = function(){
 	if(auto_stamp) {
 		clearInterval(auto_stamp)
 	}
+}
+
+exports.start = function(){
+	running = true
 }
 
 //
