@@ -107,6 +107,16 @@ exports.updateCount = function(item, amount) {
 	render()
 }
 
+//
+// Return the count for the item, or 0 if it doesn't exist...
+//
+exports.getCount = function(item) {
+	return !items[item] ? 0 : items[item].count
+}
+
+//
+// Update the maximum value for the item.
+//
 exports.updateMax = function(item, amount) {
 	item = items[item]
 	item.max = amount

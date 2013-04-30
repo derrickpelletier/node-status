@@ -30,7 +30,7 @@ var runner = function() {
   status.updateCount('ERR', 1)
   status.updateCount('pizza', 1)
 	if(times == 10) {
-		console.log("Logging something arbirtrary")
+		console.log("Logging something arbirtrary", status.getCount('total'))
 		times = 0
 	}
   setTimeout(runner, it)
