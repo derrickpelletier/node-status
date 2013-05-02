@@ -16,6 +16,7 @@ var Item = function(options) {
 	options.max && (this.max = options.max)
 	options.color && (this.color = colors[options.color])
 	this.type = (options.type) ? options.type : "count"
+	this.suffix = (options.suffix) ? options.suffix : ""
 	this.precision = (options.precision != undefined) ? options.precision : 2
 }
 
@@ -60,6 +61,7 @@ var render = function(stamp){
 	    		break;
 	    	default:
 	    		nums += c.count + (c.max ? "/" + c.max : "")
+	    		nums += c.suffix
 	    		break;
 	    }
 	  }
@@ -103,7 +105,6 @@ exports.addItem = function(name, options){
 exports.updateCount = function(item, amount) {
 	item = items[item]
 	item.count += (amount != undefined) ? amount : 1
-	if(item.max != undefined) item.count = Math.min(item.count, item.max)
 	render()
 }
 
