@@ -1,5 +1,6 @@
 //
 var status = require('./status.js'),
+    os = require('os'),
 		console = status.console()
 
 status.addItem("total", {

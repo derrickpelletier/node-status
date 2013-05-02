@@ -107,6 +107,12 @@ exports.updateCount = function(item, amount) {
 	render()
 }
 
+exports.setCount = function(item, amount) {
+	item = items[item]
+	item.count = amount
+	render()
+}
+
 //
 // Return the count for the item, or 0 if it doesn't exist...
 //
