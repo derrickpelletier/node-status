@@ -50,8 +50,11 @@ var render = function(stamp){
 	    		if(!c.max) break;
 	    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
 	    		break;
-	    	case "time":
+	    	case "runtime":
 	    		nums += nicetime(new Date().getTime() - start)
+	    		break;
+	    	case "time":
+	    		nums += nicetime(c.count)
 	    		break;
 	    	case "bar":
 	    		if(!c.max) break;
