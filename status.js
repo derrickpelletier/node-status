@@ -11,14 +11,29 @@ var colors = require('colors'),
 var Item = function(options) {
 	this.name = options.name
 	this.label = (options.label) ? options.label : options.name
-	this.count = 0
-	options.count && (this.count = options.count)
+	this.val = 0
+	options.count && (this.val = options.count)
 	options.max && (this.max = options.max)
 	options.color && (this.color = colors[options.color])
 	this.type = (options.type) ? options.type : "count"
 	this.suffix = (options.suffix) ? options.suffix : ""
 	this.precision = (options.precision != undefined) ? options.precision : 2
 }
+
+Item.prototype.inc = function(amount){
+	this.val += (amount != undefined) ? amount : 1
+	render()
+}
+Item.prototype.dec = function(amount){
+	this.val -= (amount != undefined) ? amount : 1
+	render()
+}
+Item.prototype.__defineGetter__('count',function(){return this.val})
+Item.prototype.__defineSetter__('count',function(amount){
+	this.val = amount
+	render()
+})
+
 
 //
 // Repeats a string, using it for the status bar instead of loops
@@ -48,22 +63,22 @@ var render = function(stamp){
 	    switch(types[a]) {
 	    	case "percentage":
 	    		if(!c.max) break;
-	    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
+	    		nums += (100 * c.val/c.max).toFixed(c.precision) + " %"
 	    		break;
 	    	case "runtime":
 	    		nums += nicetime(new Date().getTime() - start)
 	    		break;
 	    	case "time":
-	    		nums += nicetime(c.count)
+	    		nums += nicetime(c.val)
 	    		break;
 	    	case "bar":
 	    		if(!c.max) break;
 	    		var bar_len = 10
-	    		var done = Math.round(bar_len * c.count/c.max) 
-	    		nums += "[" + ("▒").repeat(done) + ("-").repeat(bar_len - done) + "]"
+	    		var done = Math.round(bar_len * c.val/c.max) 
+	    		nums += "[" + "▒".repeat(done) + "-".repeat(Math.max(0,bar_len - done)) + "]"
 	    		break;
 	    	default:
-	    		nums += c.count + (c.max ? "/" + c.max : "")
+	    		nums += c.val + (c.max ? "/" + c.max : "")
 	    		nums += c.suffix
 	    		break;
 	    }
@@ -100,6 +115,7 @@ process.on('exit', function() {
 exports.addItem = function(name, options){
 	options.name = name
 	items[name] = new Item(options)
+	return items[name]
 }
 
 //
@@ -107,13 +123,13 @@ exports.addItem = function(name, options){
 //
 exports.updateCount = function(item, amount) {
 	item = items[item]
-	item.count += (amount != undefined) ? amount : 1
+	item.val += (amount != undefined) ? amount : 1
 	render()
 }
 
 exports.setCount = function(item, amount) {
 	item = items[item]
-	item.count = amount
+	item.val = amount
 	render()
 }
 
@@ -121,7 +137,7 @@ exports.setCount = function(item, amount) {
 // Return the count for the item, or 0 if it doesn't exist...
 //
 exports.getCount = function(item) {
-	return !items[item] ? 0 : items[item].count
+	return !items[item] ? 0 : items[item].val
 }
 
 //

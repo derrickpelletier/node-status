@@ -9,7 +9,7 @@ status.addItem("total", {
   color:'cyan'
 })
 
-status.addItem("ERR", {
+var err_count = status.addItem("ERR", {
   color:'red',
   label:'errors'
 })
@@ -28,10 +28,10 @@ var times = 0
 var runner = function() {
 	times++
   status.updateCount('total', 5)
-  status.updateCount('ERR', 1)
+  err_count.inc()
   status.updateCount('pizza', 1)
 	if(times == 10) {
-		console.log("Logging something arbirtrary", status.getCount('total'))
+		console.log("Logging something arbirtrary", status.getCount('total'), err_count.count)
 		times = 0
 	}
   setTimeout(runner, it)
