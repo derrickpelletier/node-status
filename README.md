@@ -16,9 +16,10 @@ I plan to make a better name for this.
 	// Increment the item whenever you need it updated
 	pizza.inc()
 	
-This will output: `Status: |   pizza: [█▒▒▒▒▒▒▒▒▒]   13 %   |`
+This will output: 
+![image](http://f.cl.ly/items/1O3P0D1g0v1O373u1T1y/animated_status_bar.gif)
 
-There 
+More examples in `example.js`
 
 
 ## Options
@@ -26,6 +27,7 @@ There
 All options are optional.
 
 + `type`: defaults to 'count'. Accepts a single type, or an array of types:
+	+ `function(item){ retun item.count }`: specify a type as a custom function to process
 	+ `count`: displays the current count. Will display count/max if max is specified.
 	+ `bar`: displays a progress bar of ten segments. Only displays if `max` is set.
 	+ `percentage`: displays a percentage to 2 decimals. Only displays if `max` is set. Precision can be set manually.

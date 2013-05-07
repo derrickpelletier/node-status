@@ -28,7 +28,9 @@ Item.prototype.dec = function(amount){
 	this.val -= (amount != undefined) ? amount : 1
 	render()
 }
-Item.prototype.__defineGetter__('count',function(){return this.val})
+Item.prototype.__defineGetter__('count',function(){
+	return this.val
+})
 Item.prototype.__defineSetter__('count',function(amount){
 	this.val = amount
 	render()
@@ -47,6 +49,17 @@ String.prototype.repeat = function( len ) {return new Array(len + 1).join(this)}
 //
 var render = function(stamp){
 	if(!running) return
+	var out = generateBar()
+  if(out === "") return
+  if(stamp) {
+  	process.stdout.write("\u001B[2K")
+  	console.log(out + "\r")
+  } else {
+  	process.stdout.write("\u001B[2K  "+ out + "\r")
+  }
+}
+
+var generateBar = function(){
 	var out = ""
   for (var i in items) {
 
@@ -60,38 +73,38 @@ var render = function(stamp){
 		for (var a = 0; a < types.length; a++) {
 			if(a > 0)
 				nums += pad
-	    switch(types[a]) {
-	    	case "percentage":
-	    		if(!c.max) break;
-	    		nums += (100 * c.val/c.max).toFixed(c.precision) + " %"
-	    		break;
-	    	case "runtime":
-	    		nums += nicetime(new Date().getTime() - start)
-	    		break;
-	    	case "time":
-	    		nums += nicetime(c.val)
-	    		break;
-	    	case "bar":
-	    		if(!c.max) break;
-	    		var bar_len = 10
-	    		var done = Math.round(bar_len * c.val/c.max) 
-	    		nums += "[" + "▒".repeat(done) + "-".repeat(Math.max(0,bar_len - done)) + "]"
-	    		break;
-	    	default:
-	    		nums += c.val + (c.max ? "/" + c.max : "")
-	    		nums += c.suffix
-	    		break;
-	    }
+			if("function" === typeof types[a]) {
+				nums += types[a](c)
+			} else {
+		    switch(types[a]) {
+		    	case "percentage":
+		    		if(!c.max) break
+		    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
+		    		break
+		    	case "runtime":
+		    		nums += nicetime(new Date().getTime() - start)
+		    		break
+		    	case "time":
+		    		nums += nicetime(c.count)
+		    		break
+		    	case "bar":
+		    		if(!c.max) break
+		    		var bar_len = 10
+		    		var done = Math.round(bar_len * c.count/c.max) 
+		    		nums += "[" + "▒".repeat(Math.min(bar_len, done)) + "-".repeat(Math.max(0,bar_len - done)) + "]"
+		    		break
+		    	default:
+		    		nums += c.count + (c.max ? "/" + c.max : "")
+		    		nums += c.suffix
+		    		break
+		    }
+		  }
 	  }
     out += pad + nums + pad + "|"
   }
-  if(out === "") return
-  if(stamp) {
-  	process.stdout.write("\u001B[2K")
-  	console.log("Status @ " + nicetime(new Date().getTime() - start) + "|" + out + "\r")
-  } else {
-  	process.stdout.write("\u001B[2K  Status: |" +  out + "\r")
-  }
+  if(out !== "")
+  	out = "Status @ " + nicetime(new Date().getTime() - start) + "|" + out
+  return out
 }
 
 //
@@ -107,7 +120,7 @@ var nicetime = function(ms,round){
 
 process.on('exit', function() {
   render(true)
-});
+})
 
 //
 // add a new item to the status bar
@@ -138,6 +151,13 @@ exports.setCount = function(item, amount) {
 //
 exports.getCount = function(item) {
 	return !items[item] ? 0 : items[item].val
+}
+
+//
+// Return the status bar as a string, useful if needing to log or something.
+//
+exports.toString = function() {
+	return generateBar()
 }
 
 //
