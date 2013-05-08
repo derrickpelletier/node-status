@@ -9,6 +9,7 @@ var colors = require('colors'),
 // This is a single item (Or cell or whatever you call it) in the status display
 //
 var Item = function(options) {
+	if(!options) options = {}
 	this.name = options.name
 	this.label = (options.label) ? options.label : options.name
 	this.val = 0
