@@ -16,10 +16,12 @@ I plan to make a better name for this.
 	// Increment the item whenever you need it updated
 	pizza.inc()
 	
-This will output: 
+
+**Example output:** (More examples in `example.js`)
+
 ![image](http://f.cl.ly/items/1O3P0D1g0v1O373u1T1y/animated_status_bar.gif)
 
-More examples in `example.js`
+
 
 
 ## Options
