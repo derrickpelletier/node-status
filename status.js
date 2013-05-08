@@ -127,6 +127,7 @@ process.on('exit', function() {
 // add a new item to the status bar
 //
 exports.addItem = function(name, options){
+	if(!options) options = {}
 	options.name = name
 	items[name] = new Item(options)
 	return items[name]
