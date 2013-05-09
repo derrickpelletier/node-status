@@ -1,10 +1,7 @@
 # Status!
-=======
 
-Makes a little stdout status bar, live update, etc, etc.
-Very early/rough stage. Will document soon.
-
-I plan to make a better name for this.
+Makes a little stdout status bar. Currently something I made to use for tooling in node.
+Very early/rough stage, changing often.
 
 ## An example!
 	// Initialize the item with options
@@ -25,7 +22,7 @@ I plan to make a better name for this.
 
 
 ## Options
-===========
+
 All options are optional.
 
 + `type`: defaults to 'count'. Accepts a single type, or an array of types:
@@ -42,12 +39,11 @@ All options are optional.
 
 
 
-## A Note!
-===========
+## Console.log alongside status
 
 If you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
 
-You can utilize an extended console.log by adding this to the top of the file:
+You can utilize an extended console.log by adding this after requiring status.
 
 	console = status.console()
 
