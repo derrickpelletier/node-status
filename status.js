@@ -1,7 +1,7 @@
 var colors = require('colors'),
 		start = new Date().getTime(),
 		pad = "   ",
-		items = {},
+		items = [],
 		util = require('util'),
 		running = false
 
@@ -9,33 +9,38 @@ var colors = require('colors'),
 // This is a single item (Or cell or whatever you call it) in the status display
 //
 var Item = function(options) {
-	if(!options) options = {}
-	this.name = options.name
-	this.label = (options.label) ? options.label : options.name
-	this.val = 0
-	options.count && (this.val = options.count)
-	options.max && (this.max = options.max)
-	options.color && (this.color = colors[options.color])
-	this.type = (options.type) ? options.type : "count"
-	this.suffix = (options.suffix) ? options.suffix : ""
-	this.precision = (options.precision != undefined) ? options.precision : 2
+	var defaults = {
+		name: 'un-named',
+		max: null,
+		color: null,
+		type: 'count',
+		suffix: '',
+		precision: 2
+	}
+	options = options || {}
+	options.color && (options.color = colors[options.color])
+  for (var attrname in defaults) { 
+  	this[attrname] = options.hasOwnProperty(attrname) && options[attrname] != null ? options[attrname] : defaults[attrname]
+  }
+  this.val = options.count || 0
 }
 
-Item.prototype.inc = function(amount){
-	this.val += (amount != undefined) ? amount : 1
-	render()
+Item.prototype = {
+	inc : function(amount){
+		this.val += (amount != undefined) ? amount : 1
+		render()
+	},
+	dec : function(amount){
+		this.val -= (amount != undefined) ? amount : 1
+		render()
+	}
 }
-Item.prototype.dec = function(amount){
-	this.val -= (amount != undefined) ? amount : 1
-	render()
-}
-Item.prototype.__defineGetter__('count',function(){
-	return this.val
-})
-Item.prototype.__defineSetter__('count',function(amount){
-	this.val = amount
-	render()
-})
+Object.defineProperties(Item.prototype, {
+	'count': {
+		get : function(){ return this.val },
+		set : function(newValue){ this.val = newValue; render() }
+	}
+});
 
 
 //
@@ -65,7 +70,7 @@ var generateBar = function(){
   for (var i in items) {
 
     var c = items[i],
-  		nums = (c.color ? c.color(c.label) : c.label) + ": ",
+  		nums = (c.color ? c.color(c.name) : c.name) + ": ",
   		types = c.type
 
     if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
@@ -127,32 +132,20 @@ process.on('exit', function() {
 // add a new item to the status bar
 //
 exports.addItem = function(name, options){
-	if(!options) options = {}
-	options.name = name
-	items[name] = new Item(options)
-	return items[name]
-}
+	if(!name && !options) throw new Error("You must specify some options to create an item.")
 
-//
-// Update the count on an item, then re-render
-//
-exports.updateCount = function(item, amount) {
-	item = items[item]
-	item.val += (amount != undefined) ? amount : 1
-	render()
-}
+	if( name && typeof name === "object") { // Only gave an object of options.
+		options = name
+	} else if(typeof name === "string" || (options && typeof options === "object")) { // Gave just a name and/or some options
+		options = options || {}
+		options.name = options.name ? options.name : ((typeof name === "string") ? name : null)
+	} else {
+		throw new Error("Was unable to parse the arguments?")
+	}
 
-exports.setCount = function(item, amount) {
-	item = items[item]
-	item.val = amount
-	render()
-}
-
-//
-// Return the count for the item, or 0 if it doesn't exist...
-//
-exports.getCount = function(item) {
-	return !items[item] ? 0 : items[item].val
+	var i = new Item(options)
+	items.push(i)
+	return i
 }
 
 //
@@ -160,14 +153,6 @@ exports.getCount = function(item) {
 //
 exports.toString = function() {
 	return generateBar()
-}
-
-//
-// Update the maximum value for the item.
-//
-exports.updateMax = function(item, amount) {
-	item = items[item]
-	item.max = amount
 }
 
 var clear_line = function(){ process.stdout.write("\u001B[2K") }
@@ -217,8 +202,12 @@ exports.killAutoStamp = function(){
 	}
 }
 
+//
+// Turns it on, will start rendering on inc/dec now
+//
 exports.start = function(){
 	running = true
+	render()
 }
 
 //
