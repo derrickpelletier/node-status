@@ -145,24 +145,28 @@ var render = function(stamp){
   	console.log(out + "\r")
   } else {
 
-		
-		cursorUp(2)
-		cursor.deleteLine()
-		cursor.beginningOfLine()
+
+  	var color_len = 0
+  	for (var i = 0; i < items.length; i++) {
+  		if(items[i].color)
+  			color_len += (items[i].color("")).length
+  	}
+		cursor.CR()
 
 
-		write("+"+"-".repeat(out.length - (items.length * 10)) + "+")
+		write("+"+"-".repeat(out.length - color_len) + "+")
 		cursorDown(1)
-		cursor.deleteLine()
-		cursor.beginningOfLine()
+		cursor.CR()
 		write("| ")
 
 	  write(out)
 
 		cursorDown(1)
-		cursor.deleteLine()
+		cursor.CR()
+		write("+"+"-".repeat(out.length - color_len) + "+")
+
+		cursorUp(2)
 		cursor.beginningOfLine()
-		write("+"+"-".repeat(out.length - (items.length * 10)) + "+")
 	}
 }
 
@@ -240,8 +244,16 @@ exports.toString = function() {
 var clear_line = function(){ process.stdout.write("\u001B[2K") }
 
 var log = function() {
-	clear_line()
+	cursor.CR()
 	console.log.apply(this,arguments)
+	cursor.CR()
+	cursorDown(1)
+	cursor.CR()
+	write("\n")
+	cursor.CR()
+	cursorDown(1)
+	cursor.CR()
+	cursorUp(2)
 	render()
 }
 var info = function() {
@@ -289,7 +301,7 @@ exports.killAutoStamp = function(){
 //
 exports.start = function(){
 	cursor.hide()
-	write("\n".repeat(2))
+	write("\n")
 	running = true
 	render()
 }
