@@ -50,3 +50,8 @@ You can utilize an extended console.log by adding this after requiring status.
 or, by just logging this prior to whatever else you need to log:
 	
 	console.log(status.clear)
+
+
+## Todo's
++ Switch to process.uptime for all the timing stuff.
++ Consider having the bar update consistently if a time/runtime type is set rather than only on increment events

@@ -7,14 +7,16 @@
   },
   "private": true,
   "scripts": {
-    "status": "node status.js",
-    "example": "node example.js"
+    "test": "make test"
   },
   "engines": {
     "node": "0.10.x"
   },
   "main": "status",
   "dependencies": {
-    "colors":"*"
+    "colors": "*"
+  },
+  "devDependencies": {
+    "mocha": "*"
   }
 }

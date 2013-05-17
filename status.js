@@ -1,9 +1,51 @@
 var colors = require('colors'),
-		start = new Date().getTime(),
+		start_time = new Date().getTime(),
 		pad = "   ",
 		items = [],
 		util = require('util'),
+		tty = require('tty'),
 		running = false
+
+
+var isatty = tty.isatty(1) && tty.isatty(2);
+var window = {
+  width: isatty
+    ? process.stdout.getWindowSize
+      ? process.stdout.getWindowSize(1)[0]
+      : tty.getWindowSize()[1]
+    : 75
+}
+cursor = {
+  hide: function(){
+    process.stdout.write('\u001b[?25l');
+  },
+
+  show: function(){
+    process.stdout.write('\u001b[?25h');
+  },
+
+  deleteLine: function(){
+    process.stdout.write('\u001b[2K');
+  },
+
+  beginningOfLine: function(){
+    process.stdout.write('\u001b[0G');
+  },
+
+  CR: function(){
+    cursor.deleteLine();
+    cursor.beginningOfLine();
+  }
+}
+
+var cursorUp = function(n) {
+  write('\u001b[' + n + 'A');
+}
+var cursorDown = function(n) {
+  write('\u001b[' + n + 'B');
+}
+
+exports.start_time = start_time
 
 //
 // This is a single item (Or cell or whatever you call it) in the status display
@@ -30,9 +72,50 @@ Item.prototype = {
 		this.val += (amount != undefined) ? amount : 1
 		render()
 	},
+
 	dec : function(amount){
 		this.val -= (amount != undefined) ? amount : 1
 		render()
+	},
+
+	toString: function(){
+  	var nums = (this.color ? this.color(this.name) : this.name) + ": ",
+				types = this.type
+
+    if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
+    	types = [this.type]
+
+		for (var a = 0; a < types.length; a++) {
+			if(a > 0)
+				nums += pad
+			if("function" === typeof types[a]) {
+				nums += types[a](this)
+			} else {
+		    switch(types[a]) {
+		    	case "percentage":
+		    		if(!this.max) break
+		    		nums += (100 * this.count/this.max).toFixed(this.precision) + " %"
+		    		break
+		    	case "runtime":
+		    		nums += nicetime(process.uptime(), true) + " "
+		    		break
+		    	case "time":
+		    		nums += nicetime(this.count) + " "
+		    		break
+		    	case "bar":
+		    		if(!this.max) break
+		    		var bar_len = 10
+		    		var done = Math.round(bar_len * this.count/this.max) 
+		    		nums += "[" + "▒".repeat(Math.min(bar_len, done)) + "-".repeat(Math.max(0,bar_len - done)) + "]"
+		    		break
+		    	default:
+		    		nums += this.count + (this.max ? "/" + this.max : "")
+		    		nums += this.suffix
+		    		break
+		    }
+		  }
+	  }
+	  return nums
 	}
 }
 Object.defineProperties(Item.prototype, {
@@ -55,76 +138,62 @@ String.prototype.repeat = function( len ) {return new Array(len + 1).join(this)}
 //
 var render = function(stamp){
 	if(!running) return
+
 	var out = generateBar()
-  if(out === "") return
+
   if(stamp) {
-  	process.stdout.write("\u001B[2K")
   	console.log(out + "\r")
   } else {
-  	process.stdout.write("\u001B[2K  "+ out + "\r")
-  }
+
+		
+		cursorUp(2)
+		cursor.deleteLine()
+		cursor.beginningOfLine()
+
+
+		write("+"+"-".repeat(out.length - (items.length * 10)) + "+")
+		cursorDown(1)
+		cursor.deleteLine()
+		cursor.beginningOfLine()
+		write("| ")
+
+	  write(out)
+
+		cursorDown(1)
+		cursor.deleteLine()
+		cursor.beginningOfLine()
+		write("+"+"-".repeat(out.length - (items.length * 10)) + "+")
+	}
 }
+
+function write(string) {
+  process.stdout.write(string);
+}
+
 
 var generateBar = function(){
 	var out = ""
   for (var i in items) {
-
-    var c = items[i],
-  		nums = (c.color ? c.color(c.name) : c.name) + ": ",
-  		types = c.type
-
-    if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
-    	types = [c.type]
-
-		for (var a = 0; a < types.length; a++) {
-			if(a > 0)
-				nums += pad
-			if("function" === typeof types[a]) {
-				nums += types[a](c)
-			} else {
-		    switch(types[a]) {
-		    	case "percentage":
-		    		if(!c.max) break
-		    		nums += (100 * c.count/c.max).toFixed(c.precision) + " %"
-		    		break
-		    	case "runtime":
-		    		nums += nicetime(new Date().getTime() - start)
-		    		break
-		    	case "time":
-		    		nums += nicetime(c.count)
-		    		break
-		    	case "bar":
-		    		if(!c.max) break
-		    		var bar_len = 10
-		    		var done = Math.round(bar_len * c.count/c.max) 
-		    		nums += "[" + "▒".repeat(Math.min(bar_len, done)) + "-".repeat(Math.max(0,bar_len - done)) + "]"
-		    		break
-		    	default:
-		    		nums += c.count + (c.max ? "/" + c.max : "")
-		    		nums += c.suffix
-		    		break
-		    }
-		  }
-	  }
-    out += pad + nums + pad + "|"
+    out += pad + items[i].toString() + pad + "|"
   }
   if(out !== "")
-  	out = "Status @ " + nicetime(new Date().getTime() - start) + "|" + out
+  	out = "Status @ " + nicetime(process.uptime(), true) + " |" + out
   return out
 }
 
 //
 // Currently just changes the milliseconds to either a number of seconds or number of minutes
 //
-var nicetime = function(ms,round){
-	var seconds = (ms / 1000).toFixed(3)
+var nicetime = function(ms, use_seconds){
+	var seconds = (ms / (use_seconds ? 1 : 1000)).toFixed((use_seconds ? 0 : 3))
 	var minutes = (seconds / 60).toFixed(3)
 	var time = (minutes < 2) ? seconds : minutes
-	if(round) time = Math.round(time)
-	return time + (minutes < 2 ?  "s " : "m ")
+	return time + (minutes < 2 ?  "s" : "m")
 }
+exports.nicetime = nicetime
 
 process.on('exit', function() {
+	cursor.show()
   render(true)
 })
 
@@ -146,6 +215,19 @@ exports.addItem = function(name, options){
 	var i = new Item(options)
 	items.push(i)
 	return i
+}
+
+//
+// Removes the item from the bar
+//
+exports.removeItem = function(item) {
+	var to_remove = items.indexOf(item)
+	if(to_remove < 0)
+		throw new Error('This cell is not in the bar')
+	items.splice(to_remove)
+}
+exports.removeAll = function() {
+	items = []
 }
 
 //
@@ -206,6 +288,8 @@ exports.killAutoStamp = function(){
 // Turns it on, will start rendering on inc/dec now
 //
 exports.start = function(){
+	cursor.hide()
+	write("\n".repeat(2))
 	running = true
 	render()
 }
@@ -216,3 +300,12 @@ exports.start = function(){
 exports.stamp = function() {
 	render(true)
 }
+
+//
+// Gets the total number of cells in the bar
+//
+exports.cellCount = function() {
+	return items.length
+}
+
+
