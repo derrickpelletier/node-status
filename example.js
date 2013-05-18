@@ -1,7 +1,7 @@
 //
-var status = require('./status.js'),
-    os = require('os'),
-		console = status.console()
+var status = require('./status.js')
+  , os = require('os')
+  , console = status.console()
 
 var total = status.addItem("total", {
   max:100, 

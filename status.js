@@ -1,20 +1,14 @@
-var colors = require('colors'),
-		start_time = new Date().getTime(),
-		pad = "   ",
-		items = [],
-		util = require('util'),
-		tty = require('tty'),
-		running = false
+var colors = require('colors')
+	,	pad = "   "
+	,	items = []
+	,	util = require('util')
+	,	tty = require('tty')
+	,	running = false
+	,	auto_stamp = false
 
-
-var isatty = tty.isatty(1) && tty.isatty(2);
-var window = {
-  width: isatty
-    ? process.stdout.getWindowSize
-      ? process.stdout.getWindowSize(1)[0]
-      : tty.getWindowSize()[1]
-    : 75
-}
+// 
+// Some cursor functions. Lifted these from Mocha's reporter, but it's just standard writing stuff.
+// 
 cursor = {
   hide: function(){
     process.stdout.write('\u001b[?25l');
@@ -35,17 +29,16 @@ cursor = {
   CR: function(){
     cursor.deleteLine();
     cursor.beginningOfLine();
+  },
+
+  up: function(n){
+		process.stdout.write('\u001b[' + n + 'A')
+  },
+
+  down: function(n){
+		process.stdout.write('\u001b[' + n + 'B')
   }
 }
-
-var cursorUp = function(n) {
-  write('\u001b[' + n + 'A');
-}
-var cursorDown = function(n) {
-  write('\u001b[' + n + 'B');
-}
-
-exports.start_time = start_time
 
 //
 // This is a single item (Or cell or whatever you call it) in the status display
@@ -67,6 +60,9 @@ var Item = function(options) {
   this.val = options.count || 0
 }
 
+// 
+// Item functions for value changes, rendering, etc
+// 
 Item.prototype = {
 	inc : function(amount){
 		this.val += (amount != undefined) ? amount : 1
@@ -118,12 +114,17 @@ Item.prototype = {
 	  return nums
 	}
 }
+
+
+// 
+// Getter/setter for count. Auto-rendering, basically.
+// 
 Object.defineProperties(Item.prototype, {
 	'count': {
 		get : function(){ return this.val },
 		set : function(newValue){ this.val = newValue; render() }
 	}
-});
+})
 
 
 //
@@ -142,7 +143,8 @@ var render = function(stamp){
 	var out = generateBar()
 
   if(stamp) {
-  	console.log(out + "\r")
+  	cursor.CR()
+  	console.log(out)
   } else {
 
 
@@ -155,17 +157,17 @@ var render = function(stamp){
 
 
 		write("+"+"-".repeat(out.length - color_len) + "+")
-		cursorDown(1)
+		cursor.down(1)
 		cursor.CR()
 		write("| ")
 
 	  write(out)
 
-		cursorDown(1)
+		cursor.down(1)
 		cursor.CR()
 		write("+"+"-".repeat(out.length - color_len) + "+")
 
-		cursorUp(2)
+		cursor.up(2)
 		cursor.beginningOfLine()
 	}
 }
@@ -230,6 +232,7 @@ exports.removeItem = function(item) {
 		throw new Error('This cell is not in the bar')
 	items.splice(to_remove)
 }
+
 exports.removeAll = function() {
 	items = []
 }
@@ -241,37 +244,47 @@ exports.toString = function() {
 	return generateBar()
 }
 
-var clear_line = function(){ process.stdout.write("\u001B[2K") }
+var add_line = function(){
+	// Move down, add a new line, and move back up.
+	cursor.down(3)
+	write("\n")
+	cursor.up(2)
+}
 
 var log = function() {
-	cursor.CR()
+	if(running){
+		exports.clear()
+	}
 	console.log.apply(this,arguments)
-	cursor.CR()
-	cursorDown(1)
-	cursor.CR()
-	write("\n")
-	cursor.CR()
-	cursorDown(1)
-	cursor.CR()
-	cursorUp(2)
-	render()
+	if(running){
+		render()
+	}
 }
 var info = function() {
-	clear_line()
+	exports.clear()
 	console.info.apply(this,arguments)
 	render()
 }
 var warn = function() {
-	clear_line()
+	exports.clear()
 	console.warn.apply(this,arguments)
 	render()
 }
 var error = function() {
-	clear_line()
+	exports.clear()
 	console.error.apply(this,arguments)
 	render()
 }
-exports.clear = "\u001B[2K"
+
+exports.clear = function(){
+	cursor.CR()
+	cursor.down(1)
+	cursor.CR()
+	cursor.down(1)
+	cursor.CR()
+	write("\n")
+	cursor.up(3)
+}
 
 exports.console = function(){
 	return {
@@ -282,26 +295,13 @@ exports.console = function(){
 	}
 }
 
-var auto_stamp = false
-exports.startAutoStamp = function(rate){
-	running = true
-	if(!rate) rate = 10000
-	exports.killAutoStamp()
-	auto_stamp = setInterval(exports.stamp, rate)
-}
-
-exports.killAutoStamp = function(){
-	if(auto_stamp) {
-		clearInterval(auto_stamp)
-	}
-}
-
 //
 // Turns it on, will start rendering on inc/dec now
 //
 exports.start = function(){
 	cursor.hide()
-	write("\n")
+	write("\n".repeat(3))
+	cursor.up(2)
 	running = true
 	render()
 }
