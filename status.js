@@ -1,29 +1,42 @@
 var colors = require('colors')
-	,	pad = "   "
+	,	pad = "  "
 	,	items = []
 	,	util = require('util')
 	,	tty = require('tty')
+  , charm = require('charm')(process)
 	,	running = false
 	,	auto_stamp = false
+  , current_row = 0
+  , settings = {
+      invert: true
+  }
+
+var config = exports.config  = function(opts) {
+  opts.hasOwnProperty('invert') && (settings.invert = opts.invert)
+}
 
 // 
 // Some cursor functions. Lifted these from Mocha's reporter, but it's just standard writing stuff.
 // 
 cursor = {
   hide: function(){
-    process.stdout.write('\u001b[?25l');
+    process.stdout.write('\u001b[?25l')
   },
 
   show: function(){
-    process.stdout.write('\u001b[?25h');
+    process.stdout.write('\u001b[?25h')
   },
 
   deleteLine: function(){
-    process.stdout.write('\u001b[2K');
+    process.stdout.write('\u001b[2K')
+  },
+
+  position: function(){
+    process.stdout.write('\033[6n')
   },
 
   beginningOfLine: function(){
-    process.stdout.write('\u001b[0G');
+    process.stdout.write('\u001b[0G')
   },
 
   CR: function(){
@@ -39,11 +52,25 @@ cursor = {
 		process.stdout.write('\u001b[' + n + 'B')
   }
 }
+var isatty = tty.isatty(1) && tty.isatty(2);
+var window = {
+    width: isatty
+      ? process.stdout.getWindowSize
+        ? process.stdout.getWindowSize(1)[0]
+        : tty.getWindowSize()[1]
+      : 75
+  , height: isatty
+      ? process.stdout.getWindowSize
+        ? process.stdout.getWindowSize(1)[1]
+        : tty.getWindowSize()[2]
+      : 75
+}
+
 
 //
 // This is a single item (Or cell or whatever you call it) in the status display
 //
-var Item = function(options) {
+var Item = exports.Item = function(options) {
 	var defaults = {
 		name: 'un-named',
 		max: null,
@@ -75,7 +102,7 @@ Item.prototype = {
 	},
 
 	toString: function(){
-  	var nums = (this.color ? this.color(this.name) : this.name) + ": ",
+    var nums = " " + this.name + ": "
 				types = this.type
 
     if( Object.prototype.toString.call( types ) !== '[object Array]' ) 
@@ -111,6 +138,9 @@ Item.prototype = {
 		    }
 		  }
 	  }
+    nums += " "
+    if(this.color)
+      nums = this.color(nums)
 	  return nums
 	}
 }
@@ -140,35 +170,46 @@ String.prototype.repeat = function( len ) {return new Array(len + 1).join(this)}
 var render = function(stamp){
 	if(!running) return
 
-	var out = generateBar()
-
+	var out = (!stamp ? " " : "" ) + generateBar()
+  
   if(stamp) {
   	cursor.CR()
   	console.log(out)
   } else {
-
 
   	var color_len = 0
   	for (var i = 0; i < items.length; i++) {
   		if(items[i].color)
   			color_len += (items[i].color("")).length
   	}
-		cursor.CR()
 
 
-		write("+"+"-".repeat(out.length - color_len) + "+")
-		cursor.down(1)
-		cursor.CR()
-		write("| ")
+    charm.position(function(x,y){
+      current_row = y
+      cursor.down(window.height)
+      if(current_row === window.height) {
+        cursor.CR()
+        write("\n")
+      }
+      
+      var bar = " ".repeat(window.width)
+      if(settings.invert) {
+        bar = bar.inverse
+        out = out.inverse
+      } else {
 
-	  write(out)
+      }
+      write(bar)
+      cursor.beginningOfLine()
+      write(out)
 
-		cursor.down(1)
-		cursor.CR()
-		write("+"+"-".repeat(out.length - color_len) + "+")
+      cursor.up(window.height - current_row)
+      if(current_row === window.height) {
+        cursor.up(1)
+      }
+      cursor.beginningOfLine()
+    })
 
-		cursor.up(2)
-		cursor.beginningOfLine()
 	}
 }
 
@@ -180,7 +221,7 @@ function write(string) {
 var generateBar = function(){
 	var out = ""
   for (var i in items) {
-    out += pad + items[i].toString() + pad + "|"
+    out += pad + items[i].toString() + pad + "┊"
   }
   if(out !== "")
   	out = "Status @ " + nicetime(process.uptime(), true) + " |" + out
@@ -199,8 +240,10 @@ var nicetime = function(ms, use_seconds){
 exports.nicetime = nicetime
 
 process.on('exit', function() {
-	cursor.show()
   render(true)
+  cursor.down(2)
+  cursor.CR()
+  cursor.show()
 })
 
 //
@@ -299,11 +342,12 @@ exports.console = function(){
 // Turns it on, will start rendering on inc/dec now
 //
 exports.start = function(){
-	cursor.hide()
-	write("\n".repeat(3))
-	cursor.up(2)
-	running = true
-	render()
+  running = true
+  render()
+}
+
+exports.stop = function(){
+  charm.end()
 }
 
 //

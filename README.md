@@ -20,6 +20,14 @@ Very early/rough stage, changing often.
 
 
 
+## Config
+
+By default status is now inverted along the bottom of the console. If you want it otherwise, use
+
+	status.config({
+		invert: false,
+		bottom: false
+	})
 
 ## Options
 
@@ -55,3 +63,4 @@ or, by just logging this prior to whatever else you need to log:
 ## Todo's
 + Switch to process.uptime for all the timing stuff.
 + Consider having the bar update consistently if a time/runtime type is set rather than only on increment events
++ Add an option to have the bar always at the bottom of the terminal window or just at the bottom of the current page

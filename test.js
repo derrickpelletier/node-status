@@ -1,4 +1,6 @@
 var assert = require('assert'),
+    chai = require('chai'),
+    expect = chai.expect,
     status = require('./status.js'),
     colors = require('colors')
 
@@ -10,15 +12,13 @@ var assert = require('assert'),
 describe('Creating an item', function(){
 
   it('should throw Error when no parameters', function(){
-    assert.throws(function(){
+    expect(function(){
       status.addItem()
-    })
+    }).to.throw(Error)
   })
 
   it('should instantiate with just a name', function(){
-    assert.throws(function(){
-      throw status.addItem("just a name")
-    }, status.Item )
+    expect(status.addItem("just a name")).to.be.an.instanceof(status.Item)
   })
 
   it('should have default properties', function(){
@@ -31,13 +31,17 @@ describe('Creating an item', function(){
       suffix: '',
       precision: 2
     }
-    for(var i in defaults) {
-      assert.equal(item[i], defaults[i])
-    }
+
+    expect(item).to.have.property('name', 'un-named')
+    expect(item).to.have.property('max', null)
+    expect(item).to.have.property('color', null)
+    expect(item).to.have.property('type', 'count')
+    expect(item).to.have.property('suffix', '')
+    expect(item).to.have.property('precision', 2)
   })
 
   it('should set all applicable options', function(){
-    var test_item = status.addItem({
+    var item = status.addItem({
       name: 'all opts',
       max: 50,
       color: 'red',
@@ -45,12 +49,12 @@ describe('Creating an item', function(){
       suffix: 'seconds',
       precision: 5
     })
-    assert.equal(test_item.name, 'all opts')
-    assert.equal(test_item.max, 50)
-    assert.equal(test_item.color, colors['red'])
-    assert.equal(test_item.type, 'bar')
-    assert.equal(test_item.suffix, 'seconds')
-    assert.equal(test_item.precision, 5)
+    expect(item).to.have.property('name', 'all opts')
+    expect(item).to.have.property('max', 50)
+    expect(item).to.have.property('color', colors['red'])
+    expect(item).to.have.property('type', 'bar')
+    expect(item).to.have.property('suffix', 'seconds')
+    expect(item).to.have.property('precision', 5)
   })
 
 })
@@ -60,15 +64,15 @@ describe('Changing count values', function(){
   it('should change count accordingly', function(){
     var item = status.addItem({})
     item.inc()
-    assert.equal(item.count, 1)
+    expect(item.count).to.equal(1)
     item.inc(5)
-    assert.equal(item.count, 6)
+    expect(item.count).to.equal(6)
     item.dec()
-    assert.equal(item.count, 5)
+    expect(item.count).to.equal(5)
     item.dec(5)
-    assert.equal(item.count, 0)
+    expect(item.count).to.equal(0)
     item.count = 20
-    assert.equal(item.count, 20)
+    expect(item.count).to.equal(20)
   })
 })
 
@@ -77,31 +81,31 @@ describe('Rendering single-type cells', function(){
 
   it('should draw a cell', function(){
     var item = status.addItem("pizza")
-    assert.equal(item.toString(), "pizza: 0")
+    expect(item.toString()).to.equal(" pizza: 0 ")
 
     item.inc(5)
-    assert.equal(item.toString(), "pizza: 5")
+    expect(item.toString()).to.equal(" pizza: 5 ")
     
     item.type = "percentage"
-    assert.equal(item.toString(), "pizza: ")
+    expect(item.toString()).to.equal(" pizza:  ")
 
     item.type = "count"
     item.max = 10
-    assert.equal(item.toString(), "pizza: 5/10")
+    expect(item.toString()).to.equal(" pizza: 5/10 ")
 
     item.type = "percentage"
-    assert.equal(item.toString(), "pizza: 50.00 %")
+    expect(item.toString()).to.equal(" pizza: 50.00 % ")
     item.precision = 0
-    assert.equal(item.toString(), "pizza: 50 %")
+    expect(item.toString()).to.equal(" pizza: 50 % ")
 
     item.type = "runtime"
-    assert.equal(item.toString(), "pizza: " + process.uptime() + "s ")
+    expect(item.toString()).to.equal(" pizza: " + process.uptime() + "s  ")
 
     item.type = "time"
-    assert.equal(item.toString(), "pizza: 0.005s ")
+    expect(item.toString()).to.equal(" pizza: 0.005s  ")
 
     item.type = "bar"
-    assert.equal(item.toString(), "pizza: [▒▒▒▒▒-----]")
+    expect(item.toString()).to.equal(" pizza: [▒▒▒▒▒-----] ")
 
 
   })
@@ -119,7 +123,7 @@ describe('Rendering multi-type cells', function(){
       type: ['count', 'bar', 'percentage']
     })
 
-    assert.equal(item.toString(), "pizza: 42/100   [▒▒▒▒------]   42.00 %")
+    expect(item.toString()).to.equal(" pizza: 42/100  [▒▒▒▒------]  42.00 % ")
 
   })
 })
@@ -127,17 +131,16 @@ describe('Rendering multi-type cells', function(){
 
 describe('Removing items', function(){
   it('should clear the bar', function(){
-
-    var magic = status.addItem('magic')
-    assert.equal(status.cellCount(), 7)
-    status.removeItem(magic)
-    assert.equal(status.cellCount(), 6)
-    assert.throws(function(){
-        status.removeItem(magic)
-      }, Error)
+    var item = status.addItem('item')
+    expect(status.cellCount()).to.equal(7)
+    status.removeItem(item)
+    expect(status.cellCount()).to.equal(6)
+    expect(function(){
+        status.removeItem(item)
+      }).to.throw(Error)
 
     status.removeAll()
-    assert.equal(status.cellCount(), 0)
+    expect(status.cellCount()).to.equal(0)
 
   })
 })
@@ -152,9 +155,7 @@ describe('Rendering a bar', function(){
       count: 10
     })
 
-    assert.throws(function(){
-      throw typeof status.toString()
-    }, "string" )
+    expect(status.toString()).to.be.a("string")
 
   })
 })

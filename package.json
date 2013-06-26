@@ -14,9 +14,11 @@
   },
   "main": "status",
   "dependencies": {
-    "colors": "*"
+    "colors": "*",
+    "charm": "~0.1.2"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "chai": "~1.6.0"
   }
 }

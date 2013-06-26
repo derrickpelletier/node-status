@@ -3,6 +3,11 @@ var status = require('./status.js')
   , os = require('os')
   , console = status.console()
 
+
+status.config({
+  invert: false
+})
+
 var total = status.addItem("total", {
   max:100, 
   type:"percentage",
@@ -38,9 +43,15 @@ var runner = function() {
 	if(times % 10 === 0) {
 		console.log("Logging something arbirtrary", total.count, err_count.count)
 	}
-  if(times < 30)
+  if(times < 15) {
     setTimeout(runner, it)
+  } else {
+    status.stop()
+  }
 }
 
 status.start()
 runner()
+
+
+
