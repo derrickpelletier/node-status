@@ -195,9 +195,6 @@ var render = function(stamp){
       if(current_row === window.height) {
         cursor.CR()
         write("\n")
-      } else if(!drawn) {
-        drawn = true
-        // current_row += 1
       }
       
       var bar = " ".repeat(window.width)
@@ -210,7 +207,6 @@ var render = function(stamp){
       write(bar)
       cursor.beginningOfLine()
       write(out)
-
 
       charm.position(x,y)
       if(current_row === window.height) {
@@ -336,12 +332,6 @@ var error = function() {
 
 exports.clear = function(){
 	cursor.CR()
-	// cursor.down(1)
-	// cursor.CR()
-	// cursor.down(1)
-	// cursor.CR()
-	// write("\n")
-	// cursor.up(2)
 }
 
 exports.console = function(){
