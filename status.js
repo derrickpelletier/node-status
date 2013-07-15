@@ -5,8 +5,10 @@ var colors = require('colors')
 	,	tty = require('tty')
   , charm = require('charm')(process)
 	,	running = false
+  , drawn = false
 	,	auto_stamp = false
   , current_row = 0
+  , current_pos = null
   , looper = null
   , settings = {
         invert: true
@@ -187,11 +189,15 @@ var render = function(stamp){
 
 
     charm.position(function(x,y){
+      current_pos = [x,y]
       current_row = y
       cursor.down(window.height)
       if(current_row === window.height) {
         cursor.CR()
         write("\n")
+      } else if(!drawn) {
+        drawn = true
+        // current_row += 1
       }
       
       var bar = " ".repeat(window.width)
@@ -205,7 +211,8 @@ var render = function(stamp){
       cursor.beginningOfLine()
       write(out)
 
-      cursor.up(window.height - current_row)
+
+      charm.position(x,y)
       if(current_row === window.height) {
         cursor.up(1)
       }
@@ -329,12 +336,12 @@ var error = function() {
 
 exports.clear = function(){
 	cursor.CR()
-	cursor.down(1)
-	cursor.CR()
-	cursor.down(1)
-	cursor.CR()
-	write("\n")
-	cursor.up(3)
+	// cursor.down(1)
+	// cursor.CR()
+	// cursor.down(1)
+	// cursor.CR()
+	// write("\n")
+	// cursor.up(2)
 }
 
 exports.console = function(){
