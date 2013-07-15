@@ -351,7 +351,8 @@ exports.console = function(){
 //
 exports.start = function(){
   running = true
-  looper = setInterval(render, interval)
+  render()
+  looper = setInterval(render, settings.interval)
 }
 
 exports.stop = function(){
