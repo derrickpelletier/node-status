@@ -7,12 +7,15 @@ var colors = require('colors')
 	,	running = false
 	,	auto_stamp = false
   , current_row = 0
+  , looper = null
   , settings = {
-      invert: true
+        invert: true
+      , interval: 250
   }
 
 var config = exports.config  = function(opts) {
   opts.hasOwnProperty('invert') && (settings.invert = opts.invert)
+  opts.hasOwnProperty('interval') && (settings.interval = opts.interval)
 }
 
 // 
@@ -350,9 +353,6 @@ exports.start = function(){
   running = true
   looper = setInterval(render, interval)
 }
-
-var interval = 500
-  , looper = null
 
 exports.stop = function(){
   running = false
