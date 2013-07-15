@@ -12,6 +12,7 @@ Very early/rough stage, changing often.
 	
 	// Increment the item whenever you need it updated
 	pizza.inc()
+	pizza.inc(3)
 	
 
 **Example output:** (More examples in `example.js`)
@@ -21,12 +22,13 @@ Very early/rough stage, changing often.
 
 
 ## Config
-
-By default status is now inverted along the bottom of the console. If you want it otherwise, use
+Status accepts the following config options:
++ `invert`: defaults to *true*.
++ `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 
 	status.config({
-		invert: false,
-		bottom: false
+		invert: false, 
+		interval: 200
 	})
 
 ## Options
@@ -48,19 +50,12 @@ All options are optional.
 
 
 ## Console.log alongside status
-
-If you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
+Right now, if you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
 
 You can utilize an extended console.log by adding this after requiring status.
 
 	console = status.console()
 
-or, by just logging this prior to whatever else you need to log:
-	
-	console.log(status.clear)
-
 
 ## Todo's
-+ Switch to process.uptime for all the timing stuff.
-+ Consider having the bar update consistently if a time/runtime type is set rather than only on increment events
 + Add an option to have the bar always at the bottom of the terminal window or just at the bottom of the current page
