@@ -93,12 +93,10 @@ var Item = exports.Item = function(options) {
 Item.prototype = {
 	inc : function(amount){
 		this.val += (amount != undefined) ? amount : 1
-		render()
 	},
 
 	dec : function(amount){
 		this.val -= (amount != undefined) ? amount : 1
-		render()
 	},
 
 	toString: function(){
@@ -139,8 +137,7 @@ Item.prototype = {
 		  }
 	  }
     nums += " "
-    if(this.color)
-      nums = this.color(nums)
+    if(this.color) nums = this.color(nums)
 	  return nums
 	}
 }
@@ -152,7 +149,9 @@ Item.prototype = {
 Object.defineProperties(Item.prototype, {
 	'count': {
 		get : function(){ return this.val },
-		set : function(newValue){ this.val = newValue; render() }
+		set : function(newValue){
+      this.val = newValue
+    }
 	}
 })
 
@@ -306,17 +305,23 @@ var log = function() {
 var info = function() {
 	exports.clear()
 	console.info.apply(this,arguments)
-	render()
+  if(running){
+    render()
+  }
 }
 var warn = function() {
 	exports.clear()
 	console.warn.apply(this,arguments)
-	render()
+  if(running){
+    render()
+  }
 }
 var error = function() {
 	exports.clear()
 	console.error.apply(this,arguments)
-	render()
+  if(running){
+  	render()
+  }
 }
 
 exports.clear = function(){
@@ -343,8 +348,11 @@ exports.console = function(){
 //
 exports.start = function(){
   running = true
-  render()
+  looper = setInterval(render, interval)
 }
+
+var interval = 500
+  , looper = null
 
 exports.stop = function(){
   charm.end()
