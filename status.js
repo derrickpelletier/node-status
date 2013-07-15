@@ -355,6 +355,8 @@ var interval = 500
   , looper = null
 
 exports.stop = function(){
+  running = false
+  clearTimeout(looper)
   charm.end()
 }
 
