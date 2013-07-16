@@ -1,30 +1,37 @@
 {
-  "name" : "node-status",
-  "description" : "A live status bar generator for node.js",
-  "version" : "0.1.1",
-  "author" : {
-    "name" : "Derrick Pelletier",
-    "email" : "derrick@dpelletier.com",
-    "url" : "http://dpelletier.com"
+  "name": "node-status",
+  "description": "A live status bar generator for node.js",
+  "version": "0.1.2",
+  "author": {
+    "name": "Derrick Pelletier",
+    "email": "derrick@dpelletier.com",
+    "url": "http://dpelletier.com"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "http://github.com/derrickpelletier/node-status.git"
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/derrickpelletier/node-status.git"
   },
-  "keywords" : [
-    "terminal", "status", "statusbar", "bar", "console", "progress"
+  "keywords": [
+    "terminal",
+    "status",
+    "statusbar",
+    "bar",
+    "console",
+    "progress"
   ],
-  "scripts" : {
-    "test" : "make test"
+  "scripts": {
+    "test": "make test"
   },
-  "engines" : { "node" : ">=0.10" },
-  "main" : "status",
-  "dependencies" : {
-    "colors" : "*",
-    "charm" : "~0.1.2"
+  "engines": {
+    "node": ">=0.10"
   },
-  "devDependencies" : {
-    "mocha" : "*",
-    "chai" : "~1.6.0"
+  "main": "status",
+  "dependencies": {
+    "colors": "*",
+    "charm": "~0.1.2"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "chai": "~1.6.0"
   }
 }
