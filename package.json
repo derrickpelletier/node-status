@@ -11,6 +11,7 @@
     "type": "git",
     "url": "http://github.com/derrickpelletier/node-status.git"
   },
+  "homepage": "http://github.com/derrickpelletier/node-status.git",
   "keywords": [
     "terminal",
     "status",
