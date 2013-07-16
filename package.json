@@ -9,7 +9,7 @@
   },
   "repository" : {
     "type" : "git",
-    "url" : "http://derrickpelletier/node-status.git"
+    "url" : "http://github.com/derrickpelletier/node-status.git"
   },
   "keywords" : [
     "terminal", "status", "statusbar", "bar", "console", "progress"
