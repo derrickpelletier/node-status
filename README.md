@@ -5,14 +5,20 @@ Very early/rough stage, changing often.
 
 ## An example!
 	// Initialize the item with options
-	var pizza = status.addItem("pizza", {
+
+	var status = require('node-status')
+
+	var pizzas = status.addItem("pizza", {
 	  type: ['bar','percentage'],
 	  max: 8
 	})
 	
+	// Start the status-bar
+	status.start()
+
 	// Increment the item whenever you need it updated
-	pizza.inc()
-	pizza.inc(3)
+	pizzas.inc()
+	pizzas.inc(3)
 	
 
 **Example output:** (More examples in `example.js`)
