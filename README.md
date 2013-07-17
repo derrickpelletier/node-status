@@ -32,10 +32,12 @@ Status accepts the following config options:
 + `invert`: defaults to *true*.
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 
-	status.config({
-		invert: false, 
-		interval: 200
-	})
+```
+status.config({
+	invert: false, 
+	interval: 200
+})
+```
 
 ## Options
 
