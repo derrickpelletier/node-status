@@ -3,6 +3,10 @@
 Makes a little stdout status bar. Currently something I made to use for tooling in node.
 Very early/rough stage, changing often.
 
+```
+npm install node-status
+```
+
 ## An example!
 	// Initialize the item with options
 
