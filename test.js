@@ -2,12 +2,11 @@ var assert = require('assert'),
     chai = require('chai'),
     expect = chai.expect,
     status = require('./status.js'),
-    colors = require('colors')
+    colors = require('colors');
 
-
-
-
-
+beforeEach(function(){
+    status.removeAll();
+});
 
 describe('Creating an item', function(){
 
@@ -85,7 +84,7 @@ describe('Rendering single-type cells', function(){
 
     item.inc(5)
     expect(item.toString()).to.equal(" pizza: 5 ")
-    
+
     item.type = "percentage"
     expect(item.toString()).to.equal(" pizza:  ")
 
@@ -115,7 +114,7 @@ describe('Rendering single-type cells', function(){
 describe('Rendering multi-type cells', function(){
 
   it('should draw a cell bar with multiple types', function(){
-    
+
     var item = status.addItem({
       name: "pizza",
       count: 42,
@@ -132,9 +131,9 @@ describe('Rendering multi-type cells', function(){
 describe('Removing items', function(){
   it('should clear the bar', function(){
     var item = status.addItem('item')
-    expect(status.cellCount()).to.equal(7)
+    expect(status.cellCount()).to.equal(1)
     status.removeItem(item)
-    expect(status.cellCount()).to.equal(6)
+    expect(status.cellCount()).to.equal(0)
     expect(function(){
         status.removeItem(item)
       }).to.throw(Error)
@@ -158,4 +157,24 @@ describe('Rendering a bar', function(){
     expect(status.toString()).to.be.a("string")
 
   })
+})
+
+describe('Modifying the Array prototype does not break generateBar', function(){
+    it('should return a short string', function(){
+        Array.prototype.remove = function(e) {
+            var t, _ref;
+            if ((t = this.indexOf(e)) > -1) {
+                return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref);
+            }
+        };
+
+        status.addItem({
+            name:'foo',
+            count: 10
+        });
+
+        expect(status.toString()).to.be.a("string");
+        expect(status.toString()).to.have.length.below(32);
+
+    })
 })
