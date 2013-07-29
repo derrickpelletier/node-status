@@ -106,6 +106,9 @@ describe('Rendering single-type cells', function(){
     item.type = "bar"
     expect(item.toString()).to.equal(" pizza: [▒▒▒▒▒-----] ")
 
+    item.type = "text"
+    item.text = "hot"
+    expect(item.toString()).to.equal(" pizza: hot ")
 
   })
 })

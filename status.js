@@ -82,7 +82,8 @@ var Item = exports.Item = function(options) {
         color: null,
         type: 'count',
         suffix: '',
-        precision: 2
+        precision: 2,
+        text: ''
     };
     options = options || {};
     options.color && (options.color = colors[options.color]);
@@ -128,6 +129,9 @@ Item.prototype = {
                         break;
                     case "runtime":
                         nums += nicetime(process.uptime(), true) + " ";
+                        break;
+                    case "text":
+                        nums += this.text;
                         break;
                     case "time":
                         nums += nicetime(this.count) + " ";
