@@ -238,7 +238,9 @@ function write(string) {
 var generateBar = function() {
     var out = "";
     for (var i in items) {
-        out += pad + items[i].toString() + pad + "┊";
+        if (items.hasOwnProperty(i)) {
+            out += pad + items[i].toString() + pad + "┊";
+        }
     }
     if (out !== "") {
         out = "Status @ " + nicetime(process.uptime(), true) + " |" + out;

@@ -158,3 +158,23 @@ describe('Rendering a bar', function(){
 
   })
 })
+
+describe('Modifying the Array prototype does not break generateBar', function(){
+    it('should return a short string', function(){
+        Array.prototype.remove = function(e) {
+            var t, _ref;
+            if ((t = this.indexOf(e)) > -1) {
+                return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref);
+            }
+        };
+
+        status.addItem({
+            name:'foo',
+            count: 10
+        });
+
+        expect(status.toString()).to.be.a("string");
+        expect(status.toString()).to.have.length.below(32);
+
+    })
+})
