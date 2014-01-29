@@ -13,11 +13,6 @@ var colors = require('colors'),
     interval: 250
   };
 
-var config = exports.config  = function(opts) {
-  opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
-  opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
-};
-
 var isatty = tty.isatty(1) && tty.isatty(2);
 var tty_size = {
   width: isatty
@@ -325,7 +320,11 @@ exports.console = function(){
 //
 // Turns it on, will start rendering on inc/dec now
 //
-exports.start = function() {
+exports.start = function(opts) {
+  if(opts) {
+    opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
+    opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
+  }
   running = true;
   render();
   looper = setInterval(render, settings.interval);

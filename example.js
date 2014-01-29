@@ -4,10 +4,6 @@ var status = require('./status.js')
   , console = status.console()
 
 
-status.config({
-  invert: false
-})
-
 var total = status.addItem("total", {
   max:100, 
   type:"percentage",
@@ -46,11 +42,11 @@ var runner = function() {
   if(times < 25) {
     setTimeout(runner, it)
   } else {
-    status.stop()
+    status.stop();
   }
 }
 
-status.start()
+status.start({invert: false});
 runner()
 
 

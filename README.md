@@ -32,20 +32,20 @@ npm install node-status
 
 
 ## Config
-Status accepts the following config options:
+Status accepts the following config options on start():
 + `invert`: defaults to *true*.
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 
 ```
-status.config({
+status.start({
 	invert: false, 
 	interval: 200
 })
 ```
 
-## Options
+## Item Options
 
-All options are optional.
+All item options are optional.
 
 + `type`: defaults to 'count'. Accepts a single type, or an array of types:
 	+ `function(item){ retun item.count }`: specify a type as a custom function to process
@@ -62,7 +62,7 @@ All options are optional.
 
 
 
-## Console.log alongside status
+## Using Console.log alongside status
 Right now, if you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
 
 You can utilize an extended console.log by adding this after requiring status.
