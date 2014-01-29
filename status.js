@@ -7,8 +7,6 @@ var colors = require('colors'),
   running = false,
   drawn = false,
   auto_stamp = false,
-  current_row = 0,
-  current_pos = null,
   looper = null,
   settings = {
     invert: true,
@@ -18,44 +16,6 @@ var colors = require('colors'),
 var config = exports.config  = function(opts) {
   opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
   opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
-};
-
-//
-// Some cursor functions. Lifted these from Mocha's reporter, but it's just standard writing stuff.
-//
-cursor = {
-  hide: function() {
-    process.stdout.write('\u001b[?25l');
-  },
-
-  show: function() {
-    process.stdout.write('\u001b[?25h');
-  },
-
-  deleteLine: function() {
-    process.stdout.write('\u001b[2K');
-  },
-
-  position: function() {
-    process.stdout.write('\033[6n');
-  },
-
-  beginningOfLine: function() {
-    process.stdout.write('\u001b[0G');
-  },
-
-  CR: function() {
-    cursor.deleteLine();
-    cursor.beginningOfLine();
-  },
-
-  up: function(n) {
-    process.stdout.write('\u001b[' + n + 'A');
-  },
-
-  down: function(n) {
-    process.stdout.write('\u001b[' + n + 'B');
-  }
 };
 
 var isatty = tty.isatty(1) && tty.isatty(2);
@@ -189,47 +149,51 @@ String.prototype.repeat = function(len) {
 // If stamp is true, it will console.log it instead of doing an stdout
 //
 var render = function(stamp){
-  if (!running) {
-    return;
-  }
-
-  var out = (!stamp ? " " : "" ) + generateBar();
 
   if (stamp) {
-    cursor.CR();
-    console.log(out);
-  } else {
+    charm.erase('line').erase('down');
+    console.log(generateBar());
+  } else if(running) {
     var color_len = 0;
     for (var i = 0; i < items.length; i++) {
       if (items[i].color) {
         color_len += (items[i].color("")).length;
       }
     }
+    
+    var out = " " + generateBar();
+    var bar = " ".repeat(tty_size.width);
+    
+    if (settings.invert) {
+      bar = bar.inverse;
+      out = out.inverse;
+    }
 
-    charm.position(function(x,y) {
-      current_pos = [x,y];
-      current_row = y;
-      cursor.down(tty_size.height);
-      if (current_row === tty_size.height) {
-        cursor.CR();
-        write("\n");
+    var current_height = Math.ceil((out.length - color_len) / tty_size.width );
+
+    charm.position(function(x, y) {
+      var current_row = y;
+
+      // If the current cursor row was on the bar, we need to make a gap
+      if (current_row > tty_size.height - current_height) {
+        for(var i = 0; i < current_height; i++) {
+          // charm.delete('line', 1);
+          charm.erase('line');
+          write("\n");
+        }
+        y -= current_height - (tty_size.height - current_row);
       }
 
-      var bar = " ".repeat(tty_size.width);
-      if (settings.invert) {
-        bar = bar.inverse;
-        out = out.inverse;
+      charm.move(0, tty_size.height).write(bar);
+      for(var i = 0; i < Math.max(0, current_height - 1); i++) {
+        charm.left(tty_size.width).write(bar).up(1);
       }
+      
+      charm
+        .left(tty_size.width)
+        .write(out)
+        .position(x, y);
 
-      write(bar);
-      cursor.beginningOfLine();
-      write(out);
-
-      charm.position(x,y);
-      if (current_row === tty_size.height) {
-        cursor.up(1);
-      }
-      cursor.beginningOfLine();
     });
 
   }
@@ -265,10 +229,7 @@ var nicetime = function(ms, use_seconds){
 exports.nicetime = nicetime;
 
 process.on('exit', function() {
-  render(true);
-  cursor.down(2);
-  cursor.CR();
-  cursor.show();
+  if(running) render(true);
 });
 
 //
@@ -317,13 +278,6 @@ exports.toString = function() {
   return generateBar();
 };
 
-var add_line = function() {
-  // Move down, add a new line, and move back up.
-  cursor.down(3);
-  write("\n");
-  cursor.up(2);
-};
-
 var log = function() {
   if (running) {
     exports.clear();
@@ -356,7 +310,7 @@ var error = function() {
 };
 
 exports.clear = function(){
-  cursor.CR();
+  charm.erase('line').erase('down');
 };
 
 exports.console = function(){
@@ -380,6 +334,7 @@ exports.start = function() {
 exports.stop = function() {
   running = false;
   clearTimeout(looper);
+  render(true);
   charm.end();
 };
 
