@@ -10,6 +10,7 @@ var colors = require('colors'),
   looper = null,
   settings = {
     invert: true,
+    uptime: true,
     interval: 250
   };
 
@@ -206,7 +207,7 @@ var generateBar = function() {
       out += pad + items[i].toString() + pad + "┊";
     }
   }
-  if (out !== "") {
+  if (settings.uptime && out !== "") {
     out = "Status @ " + nicetime(process.uptime(), true) + " |" + out;
   }
   return out;
@@ -324,6 +325,7 @@ exports.start = function(opts) {
   if(opts) {
     opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
     opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
+    opts.hasOwnProperty('uptime') && (settings.uptime = opts.uptime);
   }
   running = true;
   render();
