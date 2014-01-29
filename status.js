@@ -318,7 +318,7 @@ exports.console = function(){
 };
 
 //
-// Turns it on, will start rendering on inc/dec now
+// Turns it on, will start rendering on interval now
 //
 exports.start = function(opts) {
   if(opts) {
@@ -350,5 +350,3 @@ exports.stamp = function() {
 exports.cellCount = function() {
   return items.length;
 };
-
-
