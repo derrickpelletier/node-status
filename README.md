@@ -54,7 +54,7 @@ All item options are optional.
 	+ `percentage`: displays a percentage to 2 decimals. Only displays if `max` is set. Precision can be set manually.
 	+ `time`: displays the current time since the application started.
 	+ `text`: use to display a string value, set as the text property of the item.
-+ `label`: defaults to item name. The label that precedes the count/status.
++ `name`: defaults to item name. The label that precedes the count/status.
 + `count`: defaults to 0 (zero). Can specify a starting count.
 + `max`: Will cause 'count' type to display as \<count>/\<max>. ***Required*** for some types.
 + `color`: Status uses [Color](https://github.com/Marak/colors.js) to colorize labels. Specifiy colors as strings.
