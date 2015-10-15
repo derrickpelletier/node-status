@@ -35,6 +35,7 @@ npm install node-status
 Status accepts the following config options on start():
 + `invert`: defaults to *true*.
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
++ `label`: defaults to "Status".
 
 ```
 status.start({
