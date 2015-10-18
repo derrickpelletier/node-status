@@ -11,7 +11,8 @@ var colors = require('colors'),
   settings = {
     invert: true,
     uptime: true,
-    interval: 250
+    interval: 250,
+    label: 'Status'
   };
 
 var isatty = tty.isatty(1) && tty.isatty(2);
@@ -208,7 +209,7 @@ var generateBar = function() {
     }
   }
   if (settings.uptime && out !== "") {
-    out = "Status @ " + nicetime(process.uptime(), true) + " |" + out;
+    out = settings.label + " @ " + nicetime(process.uptime(), true) + " |" + out;
   }
   return out;
 };
@@ -325,6 +326,7 @@ exports.start = function(opts) {
   if(opts) {
     opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
     opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
+    opts.hasOwnProperty('label') && (settings.label = opts.label);
     opts.hasOwnProperty('uptime') && (settings.uptime = opts.uptime);
   }
   running = true;
