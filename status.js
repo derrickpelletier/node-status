@@ -62,6 +62,10 @@ Item.prototype = {
   dec: function(amount){
     this.val -= (amount !== undefined) ? amount : 1;
   },
+  
+  update: function(amount){
+    this.val = amount || this.val;
+  }
 
   toString: function() {
     var nums = " " + this.name + ": ",
