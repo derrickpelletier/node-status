@@ -23,6 +23,9 @@ npm install node-status
 	// Increment the item whenever you need it updated
 	pizzas.inc()
 	pizzas.inc(3)
+
+	// Or statically set the value of the item
+	pizzas.update(5)
 	
 
 **Example output:** (More examples in `example.js`)

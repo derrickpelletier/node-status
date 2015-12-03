@@ -70,7 +70,7 @@ describe('Changing count values', function(){
     expect(item.count).to.equal(5)
     item.dec(5)
     expect(item.count).to.equal(0)
-    item.count = 20
+    item.update(20)
     expect(item.count).to.equal(20)
   })
 })
