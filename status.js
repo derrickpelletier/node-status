@@ -65,7 +65,7 @@ Item.prototype = {
   
   update: function(amount){
     this.val = amount || this.val;
-  }
+  },
 
   toString: function() {
     var nums = " " + this.name + ": ",
