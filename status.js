@@ -83,7 +83,10 @@ Item.prototype = {
             if (!this.max) {
               break;
             }
-            nums += (100 * this.count/this.max).toFixed(this.precision) + " %";
+            var max = typeof this.max == 'function' 
+                    ? this.max() 
+                    : this.max;
+            nums += (100 * this.count/max).toFixed(this.precision) + " %";
             break;
           case "runtime":
             nums += nicetime(process.uptime(), true) + " ";
@@ -99,11 +102,17 @@ Item.prototype = {
               break;
             }
             var bar_len = 10;
-            var done = Math.round(bar_len * this.count/this.max);
+            var max = typeof this.max == 'function' 
+                    ? this.max() 
+                    : this.max;
+            var done = Math.round(bar_len * this.count/max);
             nums += "[" + "▒".repeat(Math.min(bar_len, done)) + "-".repeat(Math.max(0,bar_len - done)) + "]";
             break;
           default:
-            nums += this.count + (this.max ? "/" + this.max : "");
+            var max = typeof this.max == 'function' 
+                    ? this.max() 
+                    : this.max;
+            nums += this.count + (max ? "/" + max : "");
             nums += this.suffix;
             break;
         }
