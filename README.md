@@ -16,14 +16,14 @@ npm install node-status
 	  type: ['bar','percentage'],
 	  max: 8
 	})
-	
+
 	// Start the status-bar
 	status.start()
 
 	// Increment the item whenever you need it updated
 	pizzas.inc()
 	pizzas.inc(3)
-	
+
 
 **Example output:** (More examples in `example.js`)
 
@@ -39,7 +39,7 @@ Status accepts the following config options on start():
 
 ```
 status.start({
-	invert: false, 
+	invert: false,
 	interval: 200
 })
 ```
@@ -57,7 +57,7 @@ All item options are optional.
 	+ `text`: use to display a string value, set as the text property of the item.
 + `name`: defaults to item name. The label that precedes the count/status.
 + `count`: defaults to 0 (zero). Can specify a starting count.
-+ `max`: Will cause 'count' type to display as \<count>/\<max>. ***Required*** for some types.
++ `max`: Will cause 'count' type to display as \<count>/\<max>. ***Required*** for some types. Can be a number or a function that returns a number.
 + `color`: Status uses [Color](https://github.com/Marak/colors.js) to colorize labels. Specifiy colors as strings.
 + `precision`: defaults to 2. The precision used in percentages.
 
