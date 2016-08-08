@@ -8,21 +8,23 @@ npm install node-status
 ```
 
 ## An example!
-	// Initialize the item with options
+```javascript
+// Initialize the item with options
 
-	var status = require('node-status')
+var status = require('node-status')
 
-	var pizzas = status.addItem("pizza", {
-	  type: ['bar','percentage'],
-	  max: 8
-	})
+var pizzas = status.addItem("pizza", {
+  type: ['bar','percentage'],
+  max: 8
+})
 
-	// Start the status-bar
-	status.start()
+// Start the status-bar
+status.start()
 
-	// Increment the item whenever you need it updated
-	pizzas.inc()
-	pizzas.inc(3)
+// Increment the item whenever you need it updated
+pizzas.inc()
+pizzas.inc(3)
+```
 
 
 **Example output:** (More examples in `example.js`)
@@ -37,7 +39,7 @@ Status accepts the following config options on start():
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 + `label`: defaults to "Status".
 
-```
+```javascript
 status.start({
 	invert: false,
 	interval: 200
@@ -67,9 +69,9 @@ All item options are optional.
 Right now, if you have to use `console.log` after the status bar has started, it can be a bit janky because the stdout line isn't cleared when a console.log is run.
 
 You can utilize an extended console.log by adding this after requiring status.
-
-	console = status.console()
-
+```javascript
+console = status.console()
+```
 
 ## Todo's
 + Add an option to have the bar always at the bottom of the terminal window or just at the bottom of the current page
