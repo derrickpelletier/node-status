@@ -87,7 +87,7 @@ Item.prototype = {
         var max = typeof this.max == 'function'
                 ? this.max()
                 : this.max;
-        return this.count + (max ? "/" + max : "");
+        return this.count + (max ? '/' + max : '');
     }
   }
 };
@@ -131,12 +131,12 @@ const render = (stamp) => {
   var color_len = 0;
   for (var i = 0; i < items.length; i++) {
     if (items[i].color) {
-      color_len += (items[i].color("")).length;
+      color_len += (items[i].color('')).length;
     }
   }
 
-  var out = " " + generateBar();
-  var bar = " ".repeat(tty_size.width);
+  var out = ' ' + generateBar();
+  var bar = ' '.repeat(tty_size.width);
 
   if (settings.invert) {
     bar = bar.inverse;
@@ -153,7 +153,7 @@ const render = (stamp) => {
       for(var i = 0; i < current_height; i++) {
         // charm.delete('line', 1);
         charm.erase('line');
-        write("\n");
+        write('\n');
       }
       y -= current_height - (tty_size.height - current_row);
     }
@@ -212,7 +212,7 @@ var nicetime = (ms, use_seconds) => {
   var seconds = (ms / (use_seconds ? 1 : 1000)).toFixed((use_seconds ? 0 : 3));
   var minutes = (seconds / 60).toFixed(3);
   var time = (minutes < 2) ? seconds : minutes;
-  return time + (minutes < 2 ?  "s" : "m");
+  return time + (minutes < 2 ?  's' : 'm');
 };
 
 process.on('exit', function () {
