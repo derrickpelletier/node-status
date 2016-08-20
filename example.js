@@ -47,6 +47,6 @@ var runner = function() {
 
 status.start({
   invert: false,
-  pattern: '{uptime.green} | {total.label} {spinner.cyan} {total.percentage}  |  {pizza.green.bar} {pizza.custom.magenta}'
+  pattern: '{uptime.green} | Total: {spinner.cyan} {total.percentage}  |  {pizza.green.bar} {pizza.custom.magenta}'
 })
 runner()
