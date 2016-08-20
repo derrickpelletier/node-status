@@ -14,7 +14,8 @@ var defaultPattern = null;
 var settings = {
   invert: true,
   interval: 250,
-  pattern: null
+  pattern: null,
+  bottom: false
 };
 
 var isatty = tty.isatty(1) && tty.isatty(2);
@@ -115,7 +116,6 @@ String.prototype.repeat = function (len) {
 
 //
 // Render the status bar row
-// Loops through all items, then loops through the different types for each item
 // If stamp is true, it will console.log it instead of doing an stdout
 //
 const render = (stamp) => {
@@ -147,7 +147,7 @@ const render = (stamp) => {
     var current_row = y;
 
     // If the current cursor row was on the bar, we need to make a gap
-    if (current_row > tty_size.height - current_height) {
+    if (settings.bottom && current_row > tty_size.height - current_height) {
       for(var i = 0; i < current_height; i++) {
         // charm.delete('line', 1);
         charm.erase('line');
@@ -156,9 +156,15 @@ const render = (stamp) => {
       y -= current_height - (tty_size.height - current_row);
     }
 
-    charm.move(0, tty_size.height).write(bar);
-    for(var i = 0; i < Math.max(0, current_height - 1); i++) {
-      charm.left(tty_size.width).write(bar).up(1);
+    charm
+      .move(0, settings.bottom ? tty_size.height : 0)
+      .left(tty_size.width)
+      .write(bar);
+
+    if(settings.bottom) {
+      for(var i = 0; i < Math.max(0, current_height - 1); i++) {
+        charm.left(tty_size.width).write(bar).up(1);
+      }
     }
 
     charm
