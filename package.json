@@ -28,8 +28,8 @@
   },
   "main": "status",
   "dependencies": {
-    "charm": "~0.2.0",
-    "colors": "*"
+    "charm": "1.0.1",
+    "colors": "1.1.2"
   },
   "devDependencies": {
     "mocha": "*",
