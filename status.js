@@ -64,14 +64,12 @@ Item.prototype = {
     switch (style) {
       case 'custom':
         return this.custom ? this.custom() : '';
-      case 'label':
-        return this.label || this.name;
       case 'percentage':
         if (!this.max) return;
         var max = typeof this.max == 'function'
                 ? this.max()
                 : this.max;
-        return (100 * this.count / max).toFixed(this.precision) + ' %';
+        return (100 * this.count / max).toFixed(this.precision) + '%';
         break;
       case 'time':
         return nicetime(this.count) + ' ';
@@ -92,7 +90,6 @@ Item.prototype = {
     }
   }
 };
-
 
 //
 // Getter/setter for count. Auto-rendering, basically.
