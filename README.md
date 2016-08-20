@@ -89,7 +89,7 @@ All items use their `name` as tokens. If you add an item named `pizza`, you can 
 The items have a number of types available to render.
 
 | type | example | |
-|---|---|
+|---|---|---|
 | default | `5` or `5/10` | With no type specified, item is rendered as the `count`, or the `count/max` if `max` was specified. |
 | percentage | 15.23% | Renders a simple percentage, requires `max` to be set. Uses the `precision` setting to round the value. |
 | custom | anything | Renders whatever is returned by the specified `custom` function. |
