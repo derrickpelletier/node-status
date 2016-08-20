@@ -13,9 +13,12 @@ var err_count = status.addItem("ERR", {
 
 var pizza = status.addItem('pizza', {
   label: 'pizza eaten',
-  max:8,
+  max: 12,
   count: 4,
-  precision:0
+  precision: 0,
+  custom: function () {
+    return `${this.count} slices`;
+  }
 })
 
 
@@ -44,7 +47,6 @@ var runner = function() {
 
 status.start({
   invert: false,
-  spinner: 'bouncingBall',
-  pattern: '{timestamp.green} | {total.label} {total.percentage}  |  {pizza.bar.green}'
+  pattern: '{timestamp.green} | {total.label} {spinner.bouncingBall.cyan} {total.percentage}  |  {pizza.green.bar} {pizza.custom.magenta}'
 })
 runner()
