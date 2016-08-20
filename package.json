@@ -1,7 +1,7 @@
 {
   "name": "node-status",
   "description": "A live status bar generator for node.js",
-  "version": "0.1.7",
+  "version": "1.0.0-rc.1",
   "author": {
     "name": "Derrick Pelletier",
     "email": "derrick@dpelletier.com",
@@ -28,8 +28,8 @@
   },
   "main": "status",
   "dependencies": {
-    "colors": "*",
-    "charm": "~0.2.0"
+    "charm": "~0.2.0",
+    "colors": "*"
   },
   "devDependencies": {
     "mocha": "*",
