@@ -48,7 +48,7 @@ status.start({
 
 All item options are optional.
 
-| option | type | default | notes ]
+| option | type | default | notes |
 |---|---|---|---|
 | **count** | `number` | `0` | Can specify a starting count if needed. |
 | **max** | `number` | `null` | Will cause 'count' type to display as `count/max`. ***Required*** for some display types. Can be a number or a function that returns a number. |
