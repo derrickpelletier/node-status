@@ -3,27 +3,23 @@ var status = require('./status.js')
   , os = require('os')
   , console = status.console()
 
-
-var total = status.addItem("total", {
-  max:100, 
-  type:"percentage",
-  color:'cyan'
+var total = status.addItem('total', {
+  max: 100
 })
 
 var err_count = status.addItem("ERR", {
-  color:'red',
-  label:'errors'
+  label: 'errors'
 })
 
-var pizza = status.addItem({
-  name: 'pizza eaten',
-  color: 'green',
-  type:[function(item){ return item.count + " slice" + (item.count === 0 || item.count > 1 ? "s" : "") }, 'bar', 'percentage'],
+var pizza = status.addItem('pizza', {
+  label: 'pizza eaten',
   max:8,
   count: 4,
   precision:0
 })
 
+
+status.pattern = '{timestamp} | {total.spinner} {total.percentage}';
 
 console.log("Starting timer for status bar example...")
 
@@ -39,15 +35,16 @@ var runner = function() {
 	if(times % 10 === 0) {
 		console.log("Logging something arbirtrary", total.count, err_count.count)
 	}
-  if(times < 25) {
+  if(times < 15) {
     setTimeout(runner, it)
   } else {
-    status.stop();
+    status.stop()
   }
 }
 
-status.start({invert: false});
+status.start({
+  invert: false,
+  spinner: 'bouncingBall',
+  pattern: '{timestamp.green} | {total.label} {total.percentage}  |  {pizza.bar.green}'
+})
 runner()
-
-
-
