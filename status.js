@@ -1,19 +1,20 @@
-var colors = require('colors'),
-  pad = "  ",
-  items = [],
-  util = require('util'),
-  tty = require('tty'),
-  charm = require('charm')(process),
-  running = false,
-  drawn = false,
-  auto_stamp = false,
-  looper = null,
-  settings = {
-    invert: true,
-    uptime: true,
-    interval: 250,
-    label: 'Status'
-  };
+const colors = require('colors');
+const util = require('util');
+const tty = require('tty');
+const charm = require('charm')(process);
+
+const PADDING = '  ';
+
+var iterations = 0;
+var looper = null;
+var running = false;
+var items = {};
+var defaultPattern = null;
+var settings = {
+  invert: true,
+  interval: 250,
+  pattern: null
+};
 
 var isatty = tty.isatty(1) && tty.isatty(2);
 var tty_size = {
