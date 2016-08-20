@@ -29,6 +29,7 @@
   "main": "status",
   "dependencies": {
     "charm": "1.0.1",
+    "cli-spinners": "0.2.0",
     "colors": "1.1.2"
   },
   "devDependencies": {

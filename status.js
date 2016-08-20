@@ -2,6 +2,7 @@ const colors = require('colors');
 const util = require('util');
 const tty = require('tty');
 const charm = require('charm')(process);
+const cliSpinners = require('cli-spinners');
 
 const PADDING = '  ';
 
@@ -43,7 +44,7 @@ var Item = exports.Item = function (options) {
   for (var attrname in defaults) {
     this[attrname] = options.hasOwnProperty(attrname) && options[attrname] !== null ? options[attrname] : defaults[attrname];
   }
-  if(options.render) this.render = options.render.bind(this);
+  if(options.custom) this.custom = options.custom.bind(this);
   this.val = options.count || 0;
 };
 
@@ -61,6 +62,8 @@ Item.prototype = {
 
   render: function (style) {
     switch (style) {
+      case 'custom':
+        return this.custom ? this.custom() : '';
       case 'label':
         return this.label || this.name;
       case 'percentage':
@@ -171,26 +174,35 @@ const render = (stamp) => {
 const write = (string) => process.stdout.write(string);
 
 const generateBar = () => {
-  var out = '';
   var pattern = settings.pattern ? settings.pattern : defaultPattern;
-  out = pattern.replace(/\{([a-zA-z0-9\s\.]*)\}/g, function(match, id) {
+  return pattern.replace(/\{([a-zA-z0-9\s\.]*)\}/g, (match, id) => {
     var tokens = id.split('.');
     var portion = '';
+    var color = null;
+    var modifier = null;
+    if(tokens.length > 1 && colors[tokens[1]]) {
+      color = colors[tokens[1]];
+      modifier = tokens.length > 2 ? tokens[2] : null;
+    } else if (tokens.length > 2 && colors[tokens[2]]) {
+      color = colors[tokens[2]];
+      modifier = tokens[1];
+    }
+
     switch (tokens[0]) {
       case 'timestamp':
       case 'uptime':
         portion = nicetime(process.uptime(), true);
         break;
+      case 'spinner': //spinner[.type][.color]
+        var spinnerType = modifier || 'dots';
+        portion = cliSpinners[spinnerType].frames[iterations % cliSpinners[spinnerType].frames.length];
+        break;
       default:
-        if(items[tokens[0]]) portion = items[tokens[0]].render(tokens.length > 1 ? tokens[1] : null);
+        if(items[tokens[0]]) portion = items[tokens[0]].render(modifier);
         break;
     }
-    if(tokens.length === 2 && colors[tokens[1]]) portion = colors[tokens[1]](portion);
-    if(tokens.length === 3 && colors[tokens[2]]) portion = colors[tokens[2]](portion);
-    return portion;
+    return color ? color(portion) : portion;
   });
-
-  return out;
 };
 
 //
