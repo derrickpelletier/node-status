@@ -256,10 +256,7 @@ exports.console = function () {
 // Turns it on, will start rendering on interval now
 //
 exports.start = (opts) => {
-  opts = opts || {};
-  opts.hasOwnProperty('invert') && (settings.invert = opts.invert);
-  opts.hasOwnProperty('interval') && (settings.interval = opts.interval);
-  opts.hasOwnProperty('pattern') && (settings.pattern = opts.pattern);
+  settings = Object.assign(settings, opts)
   running = true;
   render();
   looper = setInterval(render, settings.interval);
