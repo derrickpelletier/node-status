@@ -83,6 +83,7 @@ Item.prototype = {
                 : this.max;
         var done = Math.round(bar_len * this.count / max);
         return '[' + '▒'.repeat(Math.min(bar_len, done)) + '-'.repeat(Math.max(0,bar_len - done)) + ']';
+      case 'default':
       default:
         var max = typeof this.max == 'function'
                 ? this.max()
