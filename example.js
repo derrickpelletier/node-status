@@ -38,7 +38,7 @@ var runner = function() {
 	if(times % 10 === 0) {
 		console.log("Logging something arbirtrary", total.count, err_count.count)
 	}
-  if(times < 15) {
+  if(times < 25) {
     setTimeout(runner, it)
   } else {
     status.stop()
@@ -46,7 +46,6 @@ var runner = function() {
 }
 
 status.start({
-  invert: false,
   pattern: '{uptime.green} | Total: {spinner.cyan} {total.percentage}  |  {pizza.green.bar} {pizza.custom.magenta}'
 })
 runner()
