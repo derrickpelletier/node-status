@@ -184,6 +184,8 @@ const generateBar = () => {
     } else if (tokens.length > 2 && colors[tokens[2]]) {
       color = colors[tokens[2]];
       modifier = tokens[1];
+    } else if(tokens.length > 1) {
+      modifier = tokens[1];
     }
 
     switch (tokens[0]) {
@@ -191,7 +193,7 @@ const generateBar = () => {
       case 'uptime':
         portion = nicetime(process.uptime(), true);
         break;
-      case 'spinner': //spinner[.type][.color]
+      case 'spinner':
         var spinnerType = modifier || 'dots';
         portion = cliSpinners[spinnerType].frames[iterations % cliSpinners[spinnerType].frames.length];
         break;
