@@ -12,7 +12,7 @@ var running = false;
 var items = {};
 var defaultPattern = null;
 var settings = {
-  invert: true,
+  invert: false,
   interval: 250,
   pattern: null,
   bottom: false

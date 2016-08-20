@@ -32,13 +32,13 @@ pizzas.inc(3)
 
 ## Config
 Status accepts the following config options on start():
-+ `invert`: defaults to *true*.
++ `invert`: defaults to *false*. Inverts the colors of the bar.
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 + `pattern`: optional manual definition for status bar layout. See [Patterns](#patterns)
 
 ```javascript
 status.start({
-	invert: false,
+	invert: true,
 	interval: 200,
 	pattern: 'Doing work: {uptime}  |  {spinner.cyan}  |  {pizza.bar}'
 })
