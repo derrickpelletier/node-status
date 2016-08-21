@@ -3,6 +3,7 @@ const util = require('util');
 const tty = require('tty');
 const charm = require('charm')(process);
 const cliSpinners = require('cli-spinners');
+const cliCursor = require('cli-cursor');
 
 const PADDING = '  ';
 
@@ -264,6 +265,7 @@ exports.console = function () {
 exports.start = (opts) => {
   settings = Object.assign(settings, opts)
   running = true;
+  cliCursor.hide();
   render();
   looper = setInterval(render, settings.interval);
 };
@@ -271,6 +273,7 @@ exports.start = (opts) => {
 exports.stop = () => {
   running = false;
   clearTimeout(looper);
+  cliCursor.show();
   render(true);
   charm.end();
 };
