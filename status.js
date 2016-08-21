@@ -265,7 +265,7 @@ exports.console = function () {
 exports.start = (opts) => {
   settings = Object.assign(settings, opts)
   running = true;
-  cliCursor.hide();
+  if(!settings.bottom) cliCursor.hide();
   render();
   looper = setInterval(render, settings.interval);
 };
