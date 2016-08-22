@@ -228,7 +228,7 @@ process.on('exit', function () {
 });
 
 exports.addItem = (name, options) => {
-  if(!name || typeof name !== 'string') return;
+  if(!name || typeof name !== 'string') return null;
   options = options || {};
   options.name = name;
   var item = new Item(options);
