@@ -1,67 +1,65 @@
-var assert = require('assert'),
-    chai = require('chai'),
+var chai = require('chai');
+var assert = chai.assert,
     expect = chai.expect,
     status = require('./status.js'),
     colors = require('colors');
 
-beforeEach(function(){
-    status.removeAll();
+
+var regex = {
+  start: /^Status @ [0-9]+s  \|/
+}
+
+beforeEach(function () {
+  status.removeAll()
+  status.setPattern(null)
 });
 
-describe('Creating an item', function(){
+describe('Creating an item', function () {
 
-  it('should throw Error when no parameters', function(){
-    expect(function(){
-      status.addItem()
-    }).to.throw(Error)
+  it('should not create an item when no parameters', function () {
+    var item = status.addItem()
+    expect(item).to.be.null
+    expect(status.cellCount()).to.equal(0)
   })
 
-  it('should instantiate with just a name', function(){
-    expect(status.addItem("just a name")).to.be.an.instanceof(status.Item)
+  it('should instantiate with just a name', function () {
+    expect(status.addItem('just a name')).to.be.an.instanceof(status.Item)
   })
 
-  it('should have default properties', function(){
-    var item = status.addItem({})
+  it('should have default properties', function () {
+    var item = status.addItem('item2')
     var defaults = {
-      name: 'un-named',
       max: null,
-      color: null,
-      type: 'count',
-      suffix: '',
       precision: 2
     }
 
-    expect(item).to.have.property('name', 'un-named')
+    expect(item).to.have.property('name', 'item2')
     expect(item).to.have.property('max', null)
-    expect(item).to.have.property('color', null)
-    expect(item).to.have.property('type', 'count')
-    expect(item).to.have.property('suffix', '')
     expect(item).to.have.property('precision', 2)
   })
 
-  it('should set all applicable options', function(){
-    var item = status.addItem({
-      name: 'all opts',
+  it('should set all applicable options', function () {
+    var customFn = function () { return 'test' }
+
+    var item = status.addItem('all opts', {
       max: 50,
-      color: 'red',
-      type: 'bar',
-      suffix: 'seconds',
-      precision: 5
-    })
+      precision: 5,
+      count: 30,
+      custom: customFn
+    });
     expect(item).to.have.property('name', 'all opts')
     expect(item).to.have.property('max', 50)
-    expect(item).to.have.property('color', colors['red'])
-    expect(item).to.have.property('type', 'bar')
-    expect(item).to.have.property('suffix', 'seconds')
     expect(item).to.have.property('precision', 5)
+    expect(item).to.have.property('count', 30)
+    expect(item.custom()).to.equal('test')
   })
 
 })
 
 
-describe('Changing count values', function(){
-  it('should change count accordingly', function(){
-    var item = status.addItem({})
+describe('Changing count values', function () {
+  it('should change count accordingly', function () {
+    var item = status.addItem('changing counts')
     item.inc()
     expect(item.count).to.equal(1)
     item.inc(5)
@@ -76,71 +74,57 @@ describe('Changing count values', function(){
 })
 
 
-describe('Rendering single-type cells', function(){
+describe('Rendering single-type cells', function () {
 
-  it('should draw a cell', function(){
-    var item = status.addItem("pizza")
-    expect(item.toString()).to.equal(" pizza: 0 ")
+  it('should draw a cell', function () {
+    var item = status.addItem('pizza', {
+      custom: function () { return 'hot' }
+    })
+    expect(item.render()).to.equal('0')
 
     item.inc(5)
-    expect(item.toString()).to.equal(" pizza: 5 ")
+    expect(item.render()).to.equal('5')
 
-    item.type = "percentage"
-    expect(item.toString()).to.equal(" pizza:  ")
+    expect(item.render('percentage')).to.equal('')
 
-    item.type = "count"
     item.max = 10
-    expect(item.toString()).to.equal(" pizza: 5/10 ")
+    expect(item.render('count')).to.equal('5/10')
 
-    item.type = "percentage"
-    expect(item.toString()).to.equal(" pizza: 50.00 % ")
+    expect(item.render('percentage')).to.equal('50.00%')
     item.precision = 0
-    expect(item.toString()).to.equal(" pizza: 50 % ")
+    expect(item.render('percentage')).to.equal('50%')
 
-    item.type = "runtime"
-    expect(item.toString()).to.equal(" pizza: " + process.uptime() + "s  ")
+    expect(item.render('time')).to.equal('0.005s')
 
-    item.type = "time"
-    expect(item.toString()).to.equal(" pizza: 0.005s  ")
+    expect(item.render('bar')).to.equal('[▒▒▒▒▒-----]')
 
-    item.type = "bar"
-    expect(item.toString()).to.equal(" pizza: [▒▒▒▒▒-----] ")
-
-    item.type = "text"
-    item.text = "hot"
-    expect(item.toString()).to.equal(" pizza: hot ")
-
+    expect(item.render('custom')).to.equal('hot')
   })
 })
 
 
-describe('Rendering multi-type cells', function(){
-
-  it('should draw a cell bar with multiple types', function(){
-
-    var item = status.addItem({
-      name: "pizza",
-      count: 42,
-      max: 100,
-      type: ['count', 'bar', 'percentage']
-    })
-
-    expect(item.toString()).to.equal(" pizza: 42/100  [▒▒▒▒------]  42.00 % ")
-
-  })
-})
 
 
-describe('Removing items', function(){
-  it('should clear the bar', function(){
+
+describe('Removing items', function () {
+
+  it('should remove a single item', function () {
     var item = status.addItem('item')
-    expect(status.cellCount()).to.equal(1)
-    status.removeItem(item)
-    expect(status.cellCount()).to.equal(0)
-    expect(function(){
-        status.removeItem(item)
-      }).to.throw(Error)
+    var item2 = status.addItem('item2')
 
+    expect(status.cellCount()).to.equal(2)
+    status.removeItem(item)
+
+    expect(status.cellCount()).to.equal(1)
+    status.removeItem('item2')
+
+    expect(status.cellCount()).to.equal(0)
+  });
+
+  it('should clear the bar', function () {
+    var item = status.addItem('item')
+    var item2 = status.addItem('item2')
+    expect(status.cellCount()).to.equal(2)
     status.removeAll()
     expect(status.cellCount()).to.equal(0)
 
@@ -148,36 +132,74 @@ describe('Removing items', function(){
 })
 
 
-// Testing the formatting is useless here... see if it returns a string, I guess?
-describe('Rendering a bar', function(){
-  it('should return a string', function(){
+describe('Rendering a bar', function () {
+  it('should return a bar with a cell for the item', function () {
 
-    status.addItem({
-      name:'foo',
+    status.addItem('foo', {
       count: 10
+    });
+
+    var bar = status.toString()
+    assert.match(bar, regex.start, 'Start matches');
+    assert.match(bar, /  foo: 10  \|$/, 'Cell matches');
+  })
+
+  describe('Patterns', function () {
+    it('should render only the uptime', function () {
+      status.setPattern('{uptime}');
+      assert.match(status.toString(), /^[0-9]+s$/, 'Uptime only');
     })
 
-    expect(status.toString()).to.be.a("string")
+    it('should render only a spinner', function () {
+      var cliSpinners = require('cli-spinners');
+      status.setPattern('{spinner}')
+      var bar = status.toString();
+      expect(cliSpinners.dots.frames.indexOf(bar)).to.be.greaterThan(-1);
+    })
 
+    it('should render all spinner types', function () {
+      var cliSpinners = require('cli-spinners');
+
+      Object.keys(cliSpinners).forEach(spinner => {
+        status.setPattern(`{spinner.${spinner}}`)
+        expect(cliSpinners[spinner].frames.indexOf(status.toString())).to.be.greaterThan(-1);
+      })
+    })
+  })
+  describe('Rendering multi-type cells', function () {
+
+    it('should draw a bar with multiple types for a defined pattern', function () {
+
+      var item = status.addItem('pizza', {
+        count: 42,
+        max: 100
+      })
+
+      var item = status.addItem('hot dogs', {
+        count: 14
+      })
+
+      status.setPattern('{pizza}|{pizza.bar}|{pizza.percentage}|{hot dogs}')
+      assert.match(status.toString(), /^42\/100\|\[[▒]{4}[-]{6}]\|42.00%\|14$/, 'Cells match');
+    })
   })
 })
 
-describe('Modifying the Array prototype does not break generateBar', function(){
-    it('should return a short string', function(){
-        Array.prototype.remove = function(e) {
-            var t, _ref;
-            if ((t = this.indexOf(e)) > -1) {
-                return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref);
-            }
-        };
+describe('Modifying the Array prototype does not break generateBar', function () {
+  it('should return a proper bar string', function () {
+    Array.prototype.remove = function(e) {
+      var t, _ref;
+      if ((t = this.indexOf(e)) > -1) {
+        return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref)
+      }
+    }
 
-        status.addItem({
-            name:'foo',
-            count: 10
-        });
-
-        expect(status.toString()).to.be.a("string");
-        expect(status.toString()).to.have.length.below(32);
-
+    status.addItem('foo', {
+      count: 40
     })
+    status.setPattern(null);
+    expect(status.toString()).to.be.a('string');
+    assert.match(status.toString(), regex.start, 'Start matches');
+    assert.match(status.toString(), /  foo: 40  \|$/, 'Cell matches');
+  })
 })
