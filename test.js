@@ -1,8 +1,8 @@
-var chai = require('chai');
+var chai = require('chai')
 var assert = chai.assert,
     expect = chai.expect,
     status = require('./status.js'),
-    colors = require('colors');
+    colors = require('colors')
 
 
 var regex = {
@@ -12,7 +12,7 @@ var regex = {
 beforeEach(function () {
   status.removeAll()
   status.setPattern(null)
-});
+})
 
 describe('Creating an item', function () {
 
@@ -23,7 +23,9 @@ describe('Creating an item', function () {
   })
 
   it('should instantiate with just a name', function () {
-    expect(status.addItem('just a name')).to.be.an.instanceof(status.Item)
+    var item = status.addItem('just a name')
+    expect(item).to.be.not.null
+    expect(item.name).to.equal('just a name')
   })
 
   it('should have default properties', function () {
@@ -46,7 +48,7 @@ describe('Creating an item', function () {
       precision: 5,
       count: 30,
       custom: customFn
-    });
+    })
     expect(item).to.have.property('name', 'all opts')
     expect(item).to.have.property('max', 50)
     expect(item).to.have.property('precision', 5)
@@ -76,29 +78,77 @@ describe('Changing count values', function () {
 
 describe('Rendering single-type cells', function () {
 
-  it('should draw a cell', function () {
-    var item = status.addItem('pizza', {
-      custom: function () { return 'hot' }
-    })
+  it('should render default/count type', function () {
+    var item = status.addItem('pizza')
     expect(item.render()).to.equal('0')
 
     item.inc(5)
     expect(item.render()).to.equal('5')
 
-    expect(item.render('percentage')).to.equal('')
-
     item.max = 10
     expect(item.render('count')).to.equal('5/10')
+    expect(item.render('default')).to.equal('5/10')
+    expect(item.render()).to.equal('5/10')
+  })
 
+  it('should render custom types', function () {
+    var item = status.addItem('pizza')
+    expect(item.render('custom')).to.equal('')
+
+    item = status.addItem('pizza', {
+      custom: function () { return 'hot' }
+    })
+    expect(item.render('custom')).to.equal('hot')
+  })
+
+  it('should render percentage types', function () {
+    var item = status.addItem('pizza')
+    expect(item.render('percentage')).to.equal('')
+
+    item.inc(5)
+    item.max = 10
     expect(item.render('percentage')).to.equal('50.00%')
+
     item.precision = 0
     expect(item.render('percentage')).to.equal('50%')
+  })
 
+  it('should render bar types', function () {
+    var item = status.addItem('pizza')
+    expect(item.render('bar')).to.equal('')
+
+    item.max = 10
+    item.count = 5
+    expect(item.render('bar')).to.equal('[▒▒▒▒▒-----]')
+  })
+
+  it('should render time types', function () {
+    var item = status.addItem('pizza', {
+      count: 5
+    })
     expect(item.render('time')).to.equal('0.005s')
 
-    expect(item.render('bar')).to.equal('[▒▒▒▒▒-----]')
+    item.inc(60 * 1000 * 2 - 5)
+    expect(item.render('time')).to.equal('2.000m')
+  })
 
-    expect(item.render('custom')).to.equal('hot')
+  it('should use max as a function when specified', function () {
+    var theMax = 50
+    var item = status.addItem('pizza', {
+      count: 10,
+      max: function () {
+        return theMax
+      }
+    })
+    expect(item.render()).to.equal(`10/${theMax}`)
+    expect(item.render('percentage')).to.equal(`20.00%`)
+    expect(item.render('bar')).to.equal(`[▒▒--------]`)
+  })
+
+  it('should return empty string when max is not present and rendering bar', function () {
+    var item = status.addItem('pizza')
+    expect(item.render('bar')).to.equal('')
+    expect(item.render('bar')).to.equal('')
   })
 })
 
@@ -119,7 +169,7 @@ describe('Removing items', function () {
     status.removeItem('item2')
 
     expect(status.cellCount()).to.equal(0)
-  });
+  })
 
   it('should clear the bar', function () {
     var item = status.addItem('item')
@@ -137,35 +187,63 @@ describe('Rendering a bar', function () {
 
     status.addItem('foo', {
       count: 10
-    });
+    })
 
     var bar = status.toString()
-    assert.match(bar, regex.start, 'Start matches');
-    assert.match(bar, /  foo: 10  \|$/, 'Cell matches');
+    assert.match(bar, regex.start, 'Start matches')
+    assert.match(bar, /  foo: 10  \|$/, 'Cell matches')
   })
 
   describe('Patterns', function () {
     it('should render only the uptime', function () {
-      status.setPattern('{uptime}');
-      assert.match(status.toString(), /^[0-9]+s$/, 'Uptime only');
+      status.setPattern('{uptime}')
+      assert.match(status.toString(), /^[0-9]+s$/, 'Uptime only')
+      status.setPattern('{timestamp}')
+      assert.match(status.toString(), /^[0-9]+s$/, 'Uptime only')
     })
 
     it('should render only a spinner', function () {
-      var cliSpinners = require('cli-spinners');
+      var cliSpinners = require('cli-spinners')
       status.setPattern('{spinner}')
-      var bar = status.toString();
-      expect(cliSpinners.dots.frames.indexOf(bar)).to.be.greaterThan(-1);
+      var bar = status.toString()
+      expect(cliSpinners.dots.frames.indexOf(bar)).to.be.greaterThan(-1)
     })
 
     it('should render all spinner types', function () {
-      var cliSpinners = require('cli-spinners');
+      var cliSpinners = require('cli-spinners')
 
       Object.keys(cliSpinners).forEach(spinner => {
         status.setPattern(`{spinner.${spinner}}`)
-        expect(cliSpinners[spinner].frames.indexOf(status.toString())).to.be.greaterThan(-1);
+        expect(cliSpinners[spinner].frames.indexOf(status.toString())).to.be.greaterThan(-1)
       })
     })
   })
+
+  describe('Rendering colors with and without modifiers', function () {
+    var cliSpinners = require('cli-spinners')
+    var item = status.addItem('pizza', {
+      count: 5,
+      max: 10
+    })
+
+    status.setPattern('{pizza.red.percentage}')
+    expect(status.toString()).to.equal(colors.red('50.00%'))
+
+    status.setPattern('{pizza.red}')
+    expect(status.toString()).to.equal(colors.red('5/10'))
+
+    status.setPattern('{pizza.percentage.red}')
+    expect(status.toString()).to.equal(colors.red('50.00%'))
+
+    status.setPattern('{spinner.red.dots2}')
+    var bar = status.toString()
+    expect(cliSpinners.dots2.frames.indexOf(colors.strip(bar))).to.be.greaterThan(-1)
+
+    status.setPattern('{spinner.dots2.red}')
+    bar = status.toString()
+    expect(cliSpinners.dots2.frames.indexOf(colors.strip(bar))).to.be.greaterThan(-1)
+  })
+
   describe('Rendering multi-type cells', function () {
 
     it('should draw a bar with multiple types for a defined pattern', function () {
@@ -180,7 +258,7 @@ describe('Rendering a bar', function () {
       })
 
       status.setPattern('{pizza}|{pizza.bar}|{pizza.percentage}|{hot dogs}')
-      assert.match(status.toString(), /^42\/100\|\[[▒]{4}[-]{6}]\|42.00%\|14$/, 'Cells match');
+      assert.match(status.toString(), /^42\/100\|\[[▒]{4}[-]{6}]\|42.00%\|14$/, 'Cells match')
     })
   })
 })
@@ -188,7 +266,7 @@ describe('Rendering a bar', function () {
 describe('Modifying the Array prototype does not break generateBar', function () {
   it('should return a proper bar string', function () {
     Array.prototype.remove = function(e) {
-      var t, _ref;
+      var t, _ref
       if ((t = this.indexOf(e)) > -1) {
         return ([].splice.apply(this, [t, t - t + 1].concat(_ref = [])), _ref)
       }
@@ -197,9 +275,9 @@ describe('Modifying the Array prototype does not break generateBar', function ()
     status.addItem('foo', {
       count: 40
     })
-    status.setPattern(null);
-    expect(status.toString()).to.be.a('string');
-    assert.match(status.toString(), regex.start, 'Start matches');
-    assert.match(status.toString(), /  foo: 40  \|$/, 'Cell matches');
+    status.setPattern(null)
+    expect(status.toString()).to.be.a('string')
+    assert.match(status.toString(), regex.start, 'Start matches')
+    assert.match(status.toString(), /  foo: 40  \|$/, 'Cell matches')
   })
 })
