@@ -71,7 +71,6 @@ Item.prototype = {
                 ? this.max()
                 : this.max;
         return (100 * this.count / max).toFixed(this.precision) + '%';
-        break;
       case 'time':
         return nicetime(this.count);
       case 'bar':
