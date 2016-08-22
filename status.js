@@ -67,16 +67,16 @@ Item.prototype = {
       case 'custom':
         return this.custom ? this.custom() : '';
       case 'percentage':
-        if (!this.max) return;
+        if (!this.max) return '';
         var max = typeof this.max == 'function'
                 ? this.max()
                 : this.max;
         return (100 * this.count / max).toFixed(this.precision) + '%';
         break;
       case 'time':
-        return nicetime(this.count) + ' ';
+        return nicetime(this.count);
       case 'bar':
-        if (!this.max) return;
+        if (!this.max) return '';
         var bar_len = 10;
         var max = typeof this.max == 'function'
                 ? this.max()
@@ -84,6 +84,7 @@ Item.prototype = {
         var done = Math.round(bar_len * this.count / max);
         return '[' + '▒'.repeat(Math.min(bar_len, done)) + '-'.repeat(Math.max(0,bar_len - done)) + ']';
       case 'default':
+      case 'count':
       default:
         var max = typeof this.max == 'function'
                 ? this.max()
