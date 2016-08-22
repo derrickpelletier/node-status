@@ -282,6 +282,8 @@ exports.start = (opts) => {
   looper = setInterval(render, settings.interval);
 };
 
+exports.setPattern = (pattern) => settings.pattern = pattern;
+
 exports.stop = () => {
   running = false;
   clearTimeout(looper);
