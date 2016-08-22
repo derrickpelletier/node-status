@@ -36,13 +36,12 @@ var tty_size = {
 //
 // This is a single item (Or cell or whatever you call it) in the status display
 //
-var Item = exports.Item = function (options) {
+var Item = function (options) {
   const defaults = {
     name: null,
     max: null,
     precision: 2
   };
-  options = options || {};
   for (var attrname in defaults) {
     this[attrname] = options.hasOwnProperty(attrname) && options[attrname] !== null ? options[attrname] : defaults[attrname];
   }
