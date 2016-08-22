@@ -239,12 +239,23 @@ exports.addItem = (name, options) => {
 
 var rebuildPattern = () => {
   defaultPattern = Object.keys(items).reduce((memo, item) => {
-    return `${memo}${PADDING}{${item}.label} {${item}}${PADDING}|`;
-  }, `Status @ {runtime}${PADDING}|`);
+    return `${memo}${PADDING}${item}: {${item}}${PADDING}|`;
+  }, `Status @ {uptime}${PADDING}|`);
 };
 
-exports.removeItem = (item) => delete items[item];
-exports.removeAll = () => items = {};
+exports.removeItem = (item) => {
+  if(typeof item === 'string') {
+    delete items[item];
+  } else if(item instanceof Item) {
+    delete items[item.name];
+  }
+  rebuildPattern();
+}
+
+exports.removeAll = () => {
+  items = {};
+  rebuildPattern();
+}
 exports.toString = () => generateBar();
 exports.clear = () => charm.erase('line').erase('down');
 
