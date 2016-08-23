@@ -40,7 +40,8 @@ var Item = function (options) {
   const defaults = {
     name: null,
     max: null,
-    precision: 2
+    precision: 2,
+    steps: false
   };
   for (var attrname in defaults) {
     this[attrname] = options.hasOwnProperty(attrname) && options[attrname] !== null ? options[attrname] : defaults[attrname];
@@ -61,8 +62,19 @@ Item.prototype = {
     this.val -= (amount !== undefined) ? amount : 1;
   },
 
+  doneStep: function (success, message) {
+    if(!this.steps || this.count >= this.steps.length) return;
+    charm.erase('line').erase('down');
+    message = message ? ` - ${message}` : '';
+    write(`${success ? '✔'.green : '✖'.red} ${this.render('step')}${message}\n`);
+    this.inc();
+  },
+
   render: function (style) {
     switch (style) {
+      case 'step':
+        if(!this.steps || this.count >= this.steps.length) return '';
+        return `${this.steps[this.count]}`;
       case 'custom':
         return this.custom ? this.custom() : '';
       case 'percentage':
