@@ -1,7 +1,9 @@
-# Status!
+# node-status
 
-Makes a little stdout status bar. Currently something I made to use for tooling in node.
-Very early/rough stage, changing often.
+Makes a little stdout status bar. As simple or complex as you need.
+
+![image](https://d17oy1vhnax1f7.cloudfront.net/items/2S0x2U0S0L1r3a441O1Q/Screen%20Recording%202016-08-23%20at%2012.37%20PM.gif)
+![image](https://cl.ly/2o2Q3W3W2K3b/Screen%20Recording%202016-08-23%20at%2012.46%20PM.gif)
 
 ```
 npm install node-status
@@ -22,13 +24,6 @@ status.start()
 pizzas.inc()
 pizzas.inc(3)
 ```
-
-
-**Example output not representative of above settings:** (More examples in `example.js`)
-
-![image](http://f.cl.ly/items/1O3P0D1g0v1O373u1T1y/animated_status_bar.gif)
-
-
 
 ## Config
 Status accepts the following config options on start():
