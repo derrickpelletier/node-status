@@ -6,6 +6,12 @@ Makes a little stdout status bar. As simple or complex as you need.
 npm install node-status
 ```
 
+- [Config](#config)
+- [Item Options](#item-options)
+- [Item Methods](#item-methods)
+- [Patterns](#patterns)
+- [Tokens](#non-item-tokens)
+
 ## Example of custom patterns
 ![image](https://cl.ly/2m3E2629130X/Screen%20Recording%202016-08-23%20at%2012.46%20PM%20(3).gif)
 
@@ -22,12 +28,6 @@ status.start()
 pizzas.inc()
 pizzas.inc(3)
 ```
-
-- [Config](#config)
-- [Item Options](#item-options)
-- [Item Methods](#item-methods)
-- [Patterns](#patterns)
-- [Tokens](#non-item-tokens)
 
 ## Config
 Status accepts the following config options on `start()`:
