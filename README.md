@@ -49,6 +49,15 @@ All item options are optional.
 | **max** | `number` | `null` | Will cause 'count' type to display as `count/max`. ***Required*** for some display types. Can be a number or a function that returns a number. |
 | **custom** | `function` | `null` | a function run when the pattern `{<item>.custom}` is used. Access `this.count` and `this.max` for values if needed. Must return a `string`. |
 | **precision** | `number` | `2` | The precision used in percentages. |
+| **steps** | `Array` | `false` | An array of strings that identify steps for the item. The count of the item identifies the current step. |
+
+## Item Methods
+
+| method | notes |
+|---|---|
+| `inc( Number )` | Increases the count on the item by the desired amount. If no amount is specified, will increase by 1. |
+| `dec( Number )` | Decreases the count on the item by the desired amount. If no amount is specified, will decrease by 1. |
+| `doneStep( success:Boolean, message:String )` | A helper method for when using `steps` on an item. Will stamp the step to the screen with a ✔ when success is `true`, ✖ when false. An optional message can be added which will be appended to the display. |
 
 ## Patterns
 
