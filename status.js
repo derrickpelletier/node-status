@@ -185,8 +185,8 @@ const render = () => {
 
 const write = (string) => process.stdout.write(string);
 
-const generateBar = () => {
-  var pattern = settings.pattern ? settings.pattern : defaultPattern;
+const generateBar = (withPattern) => {
+  var pattern = withPattern ? withPattern : (settings.pattern ? settings.pattern : defaultPattern);
   return pattern.replace(/\{([a-zA-z0-9\s\.]*)\}/g, (match, id) => {
     var tokens = id.split('.');
     var portion = '';
