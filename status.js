@@ -141,7 +141,7 @@ const render = () => {
     }
   }
 
-  var out = ' ' + generateBar();
+  var out = generateBar();
   var bar = ' '.repeat(tty_size.width);
 
   if (settings.invert) {
