@@ -12,13 +12,6 @@ npm install node-status
 ## Example of steps
 ![image](https://d17oy1vhnax1f7.cloudfront.net/items/2S0x2U0S0L1r3a441O1Q/Screen%20Recording%202016-08-23%20at%2012.37%20PM.gif)
 
-- [Quickstart](#quickstart)
-- [Config](#config)
-- [Item Options](#item-options)
-- [Item Methods](#item-methods)
-- [Patterns](#patterns)
-- [Tokens](#non-item-tokens)
-
 ## Quickstart
 ```javascript
 var status = require('node-status')
@@ -29,6 +22,12 @@ status.start()
 pizzas.inc()
 pizzas.inc(3)
 ```
+
+- [Config](#config)
+- [Item Options](#item-options)
+- [Item Methods](#item-methods)
+- [Patterns](#patterns)
+- [Tokens](#non-item-tokens)
 
 ## Config
 Status accepts the following config options on `start()`:
