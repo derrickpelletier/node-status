@@ -2,34 +2,31 @@
 
 Makes a little stdout status bar. As simple or complex as you need.
 
+```
+npm install node-status
+```
+
 ## Example of custom patterns
 ![image](https://cl.ly/2m3E2629130X/Screen%20Recording%202016-08-23%20at%2012.46%20PM%20(3).gif)
 
 ## Example of steps
 ![image](https://d17oy1vhnax1f7.cloudfront.net/items/2S0x2U0S0L1r3a441O1Q/Screen%20Recording%202016-08-23%20at%2012.37%20PM.gif)
 
-```
-npm install node-status
-```
 
-## An example!
+
+## Quickstart
 ```javascript
-// Initialize the item with options
-
 var status = require('node-status')
-
 var pizzas = status.addItem('pizza')
 
-// Start the status-bar
 status.start()
 
-// Increment the item whenever you need it updated
 pizzas.inc()
 pizzas.inc(3)
 ```
 
 ## Config
-Status accepts the following config options on start():
+Status accepts the following config options on `start()`:
 + `invert`: defaults to *false*. Inverts the colors of the bar.
 + `interval`: defaults to 250. Number of milliseconds per re-draw interval.
 + `pattern`: optional manual definition for status bar layout. See [Patterns](#patterns)
