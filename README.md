@@ -2,8 +2,9 @@
 
 Makes a little stdout status bar. As simple or complex as you need.
 
+![image](https://cl.ly/2m3E2629130X/Screen%20Recording%202016-08-23%20at%2012.46%20PM%20(3).gif)
 ![image](https://d17oy1vhnax1f7.cloudfront.net/items/2S0x2U0S0L1r3a441O1Q/Screen%20Recording%202016-08-23%20at%2012.37%20PM.gif)
-![image](https://cl.ly/2o2Q3W3W2K3b/Screen%20Recording%202016-08-23%20at%2012.46%20PM.gif)
+
 
 ```
 npm install node-status
