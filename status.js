@@ -130,12 +130,8 @@ String.prototype.repeat = function (len) {
 // Render the status bar row
 // If stamp is true, it will console.log it instead of doing an stdout
 //
-const render = (stamp) => {
+const render = () => {
   iterations++;
-  if (stamp) {
-    charm.erase('line').erase('down');
-    return console.log(generateBar());
-  }
   if (!running) return;
 
   var color_len = 0;
@@ -234,7 +230,7 @@ var nicetime = (ms, use_seconds) => {
 };
 
 process.on('exit', function () {
-  if(running) render(true);
+  if(running) stamp();
 });
 
 exports.addItem = (name, options) => {
@@ -298,14 +294,16 @@ exports.stop = () => {
   running = false;
   clearTimeout(looper);
   cliCursor.show();
-  render(true);
   charm.end();
 };
 
 //
 // Stamps the current status to the console
 //
-exports.stamp = () => render(true);
+var stamp = exports.stamp = (withPattern) => {
+  charm.erase('line').erase('down');
+  return console.log(generateBar(withPattern));
+}
 
 //
 // Gets the total number of cells in the bar
