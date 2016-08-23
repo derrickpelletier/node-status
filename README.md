@@ -17,8 +17,7 @@ npm install node-status
 - [Item Options](#item-options)
 - [Item Methods](#item-methods)
 - [Patterns](#patterns)
-- [Non-item tokens](#non-item-tokens)
-- [Item tokens](#item-tokens)
+- [Tokens](#non-item-tokens)
 
 ## Quickstart
 ```javascript
